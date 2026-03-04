@@ -6,17 +6,17 @@
     --surface-color: #161b22;
     --surface-glass: rgba(22, 27, 34, 0.6);
     --border-color: rgba(255, 255, 255, 0.1);
-    
+
     --text-primary: #f0f6fc;
     --text-secondary: #8b949e;
-    
+
     --accent-blue: #3b82f6;
     --accent-purple: #8b5cf6;
     --gradient-primary: linear-gradient(135deg, var(--accent-blue), var(--accent-purple));
-    
+
     --font-heading: 'Outfit', sans-serif;
     --font-body: 'Inter', sans-serif;
-    
+
     --transition-fast: 0.2s ease;
     --transition-normal: 0.4s ease;
 }
@@ -49,7 +49,10 @@ ul {
 }
 
 /* Typography */
-h1, h2, h3, h4 {
+h1,
+h2,
+h3,
+h4 {
     font-family: var(--font-heading);
     font-weight: 800;
     line-height: 1.2;
@@ -218,7 +221,7 @@ h1, h2, h3, h4 {
    Hero Section
 ========================================= */
 section {
-    padding: 6rem 2rem;
+    padding: 8rem 2rem;
     max-width: 1200px;
     margin: 0 auto;
 }
@@ -228,7 +231,7 @@ section {
     display: flex;
     align-items: center;
     position: relative;
-    padding-top: 8rem;
+    padding-top: 10rem;
 }
 
 .hero-content {
@@ -247,7 +250,9 @@ section {
     color: var(--text-secondary);
     font-weight: 400;
     margin-bottom: 1.5rem;
-    height: 2.4rem; /* keep height to prevent layout shift */
+    min-height: 2.8rem;
+    /* Use min-height to accommodate wrapping text */
+    line-height: 1.4;
 }
 
 .cursor {
@@ -259,8 +264,15 @@ section {
 }
 
 @keyframes blink {
-    0%, 100% { opacity: 1; }
-    50% { opacity: 0; }
+
+    0%,
+    100% {
+        opacity: 1;
+    }
+
+    50% {
+        opacity: 0;
+    }
 }
 
 .hero-desc {
@@ -335,7 +347,7 @@ section {
 .skill-card:hover {
     border-color: var(--accent-purple);
     transform: translateY(-3px);
-    box-shadow: 0 5px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
     background: rgba(139, 92, 246, 0.05);
 }
 
@@ -372,8 +384,8 @@ section {
 
 .project-card:hover {
     transform: translateY(-8px);
-    border-color: rgba(255,255,255,0.2);
-    box-shadow: 0 15px 30px rgba(0,0,0,0.4);
+    border-color: rgba(255, 255, 255, 0.2);
+    box-shadow: 0 15px 30px rgba(0, 0, 0, 0.4);
 }
 
 .project-card:hover::before {
@@ -381,18 +393,19 @@ section {
 }
 
 .project-content {
-    padding: 2rem;
+    padding: 2.5rem;
 }
 
 .project-content h3 {
-    font-size: 1.5rem;
-    margin-bottom: 1rem;
+    font-size: 1.6rem;
+    margin-bottom: 1.2rem;
 }
 
 .project-content p {
     color: var(--text-secondary);
-    margin-bottom: 1.5rem;
-    font-size: 0.95rem;
+    margin-bottom: 1.8rem;
+    font-size: 1rem;
+    line-height: 1.6;
 }
 
 .tech-stack {
@@ -473,16 +486,16 @@ section {
 }
 
 .contact-form-wrapper {
-    padding: 3rem;
+    padding: 4rem;
 }
 
 .form-group {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1.8rem;
 }
 
 .form-group label {
     display: block;
-    margin-bottom: 0.5rem;
+    margin-bottom: 0.8rem;
     font-weight: 600;
     color: var(--text-secondary);
 }
@@ -572,11 +585,12 @@ footer {
    Responsive Design
 ========================================= */
 @media screen and (max-width: 900px) {
+
     .about-container,
     .contact-container {
         grid-template-columns: 1fr;
     }
-    
+
     .social-links {
         flex-direction: row;
     }
@@ -601,7 +615,7 @@ footer {
         align-items: center;
         transition: var(--transition-normal);
         border-left: 1px solid var(--border-color);
-        box-shadow: -10px 0 30px rgba(0,0,0,0.5);
+        box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
     }
 
     .navbar .nav-links.nav-active {
@@ -613,12 +627,21 @@ footer {
         z-index: 1001;
     }
 
+    section {
+        padding: 6rem 1.5rem;
+    }
+
+    .hero {
+        padding-top: 8rem;
+    }
+
     .hero h1 {
         font-size: 2.5rem;
     }
-    
+
     .hero-bg-glow {
-        display: none; /* Hide glow on mobile for better performance/readability */
+        display: none;
+        /* Hide glow on mobile for better performance/readability */
     }
 
     .hero-buttons {
@@ -629,7 +652,7 @@ footer {
     .hero-buttons .btn {
         width: 100%;
     }
-    
+
     .contact-form-wrapper {
         padding: 2rem 1.5rem;
     }

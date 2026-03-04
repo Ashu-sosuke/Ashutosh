@@ -96,4 +96,30 @@ document.addEventListener('DOMContentLoaded', () => {
         typeWriter();
     }, 1000);
 
+    /* --- Contact Form Email Logic --- */
+    const contactForm = document.getElementById('contactForm');
+    if (contactForm) {
+        contactForm.addEventListener('submit', function (e) {
+            e.preventDefault();
+
+            // Get values
+            const name = document.getElementById('name').value;
+            const email = document.getElementById('email').value;
+            const message = document.getElementById('message').value;
+
+            // Your email address where you want to receive messages
+            const targetEmail = "15bhartiashutosh@gmail.com";
+
+            // Construct email subject and body
+            const subject = encodeURIComponent(`New Portfolio Message from ${name}`);
+            const body = encodeURIComponent(`Name: ${name}\nEmail: ${email}\n\nMessage:\n${message}`);
+
+            // Open default mail client
+            window.location.href = `mailto:${targetEmail}?subject=${subject}&body=${body}`;
+
+            // Optional: reset form after sending
+            contactForm.reset();
+        });
+    }
+
 });
