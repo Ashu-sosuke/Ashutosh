@@ -105,14 +105,14 @@ export default function Projects() {
               </div>
             </div>
 
-            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-stretch">
+            <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 items-start">
               {/* Left: Image Showcase with 3D Tilt Wrapper */}
               <motion.div
                 initial={{ opacity: 0, x: -30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.6, ease: customBezier }}
-                className="lg:col-span-6 flex flex-col justify-center relative z-10"
+                className="lg:col-span-7 flex flex-col justify-center relative z-10"
               >
                 <Tilt maxTilt={10}>
                   <div
@@ -123,11 +123,11 @@ export default function Projects() {
                     className="projects-featured-image relative rounded-xl p-3 bg-gradient-to-br from-[#FF6B35]/15 via-[#1A1815] to-[#2EC4B6]/15 border border-[#2E2A26] cursor-pointer group/img transition-all duration-300 hover:border-[#FF6B35]/50 shadow-inner overflow-hidden"
                   >
                     {/* Inner image container */}
-                    <div className="relative rounded-lg overflow-hidden border border-[#2E2A26] bg-[#0F0E0D]">
+                    <div className="relative rounded-lg overflow-hidden border border-[#2E2A26] bg-[#0F0E0D] aspect-[4/3] w-full">
                       <img
                         src={astraImg}
                         alt="AstraSOS AI Emergency Response Ecosystem"
-                        className="w-full h-auto object-cover transform group-hover/img:scale-[1.01] transition-transform duration-300"
+                        className="w-full h-full object-contain transform group-hover/img:scale-[1.01] transition-transform duration-300"
                       />
 
                       {/* Interactive Pointer-reactive Glow overlay */}
@@ -139,25 +139,26 @@ export default function Projects() {
                           }}
                         />
                       )}
-                    </div>
 
-                    <div className="mt-3 flex items-center justify-between text-[11px] text-[#9C9388]">
-                      <span className="flex items-center gap-1.5">
-                        <ShieldCheck className="w-4 h-4 text-[#2EC4B6]" /> 4 Microservices · Dual Dispatch
-                      </span>
-                      <span className="text-[#FF6B35] font-semibold tracking-wider">CLICK TO EXPAND</span>
+                      {/* Bottom Overlay Bar */}
+                      <div className="absolute bottom-0 left-0 right-0 px-3.5 py-2.5 bg-[#0F0E0D]/85 backdrop-blur-md border-t border-[#2E2A26] flex items-center justify-between text-[11px] text-[#9C9388] z-20">
+                        <span className="flex items-center gap-1.5">
+                          <ShieldCheck className="w-4 h-4 text-[#2EC4B6]" /> 4 Microservices · Dual Dispatch
+                        </span>
+                        <span className="text-[#FF6B35] font-semibold tracking-wider">CLICK TO EXPAND</span>
+                      </div>
                     </div>
                   </div>
                 </Tilt>
               </motion.div>
-
+ 
               {/* Right: Content Column */}
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.6, ease: customBezier }}
-                className="lg:col-span-6 flex flex-col justify-between space-y-6 text-left"
+                className="lg:col-span-5 flex flex-col justify-between space-y-6 text-left"
               >
                 <div className="space-y-4">
                   <div>
@@ -168,11 +169,11 @@ export default function Projects() {
                       AI Emergency Response Ecosystem
                     </p>
                   </div>
-
+ 
                   <p className="text-sm text-[#9C9388] leading-relaxed">
                     Architected a 4-service AI ecosystem (Android client, FastAPI intelligence engine, React dashboard, geospatial scraper) routing SOS incidents from trigger to responder dashboard with real-time multi-signal fusion.
                   </p>
-
+ 
                   {/* Real Metrics Bar */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3.5 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] flex flex-col">
@@ -183,7 +184,7 @@ export default function Projects() {
                         Trigger-to-Dispatch
                       </span>
                     </div>
-
+ 
                     <div className="p-3.5 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] flex flex-col">
                       <span className="text-2xl sm:text-3xl font-bold font-heading text-[#2EC4B6]">
                         -20%
@@ -193,7 +194,7 @@ export default function Projects() {
                       </span>
                     </div>
                   </div>
-
+ 
                   {/* Why It Matters Callout */}
                   <div className="p-4 rounded-r-xl border-l-3 border-[#FF6B35] bg-[#FF6B35]/8">
                     <span className="text-[10px] font-semibold text-[#FF6B35] uppercase tracking-wider block mb-0.5">
@@ -207,7 +208,7 @@ export default function Projects() {
 
                 {/* Tech tags and GitHub CTA */}
                 <div className="space-y-4 pt-4 border-t border-[#2E2A26]">
-                  <div className="flex flex-wrap gap-1.5">
+                  <div className="flex flex-wrap gap-3">
                     {featuredProject.tags.map((tag) => (
                       <span
                         key={tag}

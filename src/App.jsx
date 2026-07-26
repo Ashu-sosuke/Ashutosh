@@ -15,7 +15,7 @@ import Achievements from './components/Achievements';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { MousePositionProvider } from './context/MouseContext';
-import CustomCursor from './components/CustomCursor';
+import ParticleField from './components/ParticleField';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -62,8 +62,8 @@ export default function App() {
 
   return (
     <MousePositionProvider>
-      <CustomCursor />
       <div className="min-h-screen bg-[#0F0E0D] text-[#F5F0E8] antialiased selection:bg-[#FF6B35]/20 selection:text-[#FF6B35] bg-grain overflow-x-hidden">
+        <ParticleField />
         {/* Scroll Progress Bar */}
         <motion.div
           className="fixed top-0 left-0 right-0 h-[3px] z-[100] origin-left bg-gradient-to-r from-[#FF6B35] to-[#2EC4B6]"

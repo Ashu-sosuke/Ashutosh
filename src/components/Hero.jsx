@@ -45,7 +45,8 @@ export default function Hero() {
       dotPosition="top-right"
       snippet={heroSnippet}
       snippetPosition="top-right"
-      className="relative min-h-screen flex items-center justify-center pt-28 pb-20"
+      className="relative min-h-screen"
+      contentClassName="relative z-10 w-full min-h-screen flex flex-col justify-center items-center pt-28 pb-20"
     >
       <div className="layout-container w-full z-10 relative">
         <motion.div
@@ -161,7 +162,7 @@ export default function Hero() {
           opacity: { delay: 1.2, duration: 0.4 },
           y: { repeat: Infinity, duration: 2 },
         }}
-        className="absolute bottom-6 left-1/2 -translate-x-1/2 z-10"
+        className="absolute bottom-10 left-1/2 -translate-x-1/2 z-10"
       >
         <a href="#about" className="flex flex-col items-center gap-1 text-[#9C9388] hover:text-[#FF6B35] transition-colors">
           <span className="text-[11px] tracking-widest uppercase font-medium">Scroll</span>

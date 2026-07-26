@@ -1,7 +1,6 @@
 import React from 'react';
 import { motion, useScroll, useTransform } from 'framer-motion';
 import orangeSplatter from '../assets/orange-splatter.png';
-import DotGrid from './DotGrid';
 import { useMousePosition } from '../context/MouseContext';
 
 export default function SectionCanvas({
@@ -14,6 +13,7 @@ export default function SectionCanvas({
   dotPosition = "top-right",
   snippet = "",
   snippetPosition = "top-right",
+  contentClassName = "",
   children
 }) {
   const { mouseX, mouseY } = useMousePosition();
@@ -57,12 +57,6 @@ export default function SectionCanvas({
         }}
       />
 
-      {/* 2. Reactive Corner Dot Grid */}
-      <DotGrid
-        count={dotCount}
-        maxOffset={15}
-        className={`${dotClass} hidden md:block m-12 z-0`}
-      />
 
       {/* 3. Ambient Floating Code Snippet */}
       {snippet && (
@@ -75,7 +69,7 @@ export default function SectionCanvas({
       )}
 
       {/* 4. Foreground Content */}
-      <div className="relative z-10">
+      <div className={`relative z-10 ${contentClassName}`}>
         {children}
       </div>
     </section>
