@@ -11,47 +11,81 @@ export default function ParticleField() {
   // Create a scroll-based dimming opacity: 1.0 at top of page, fading to 0.45 when scrolling past 800px
   const dimOpacity = useTransform(scrollY, [200, 800], [1.0, 0.45]);
 
-  // Generate particle configurations once on mount
+  // Generate particle configurations once on mount using jittered grid distribution
   const particlesData = useMemo(() => {
-    const count = 80;
-    const data = [];
+    // Performance check: fallback to lower count on lower-end devices
+    const isLowEnd = typeof navigator !== 'undefined' && 
+      navigator.hardwareConcurrency && 
+      navigator.hardwareConcurrency < 4;
+
+    const cols = isLowEnd ? 10 : 16;
+    const rows = isLowEnd ? 8 : 10;
     const colors = ['#FF6B35', '#2EC4B6', '#3A6EA5']; // Orange, Teal, Muted Blue
 
-    for (let i = 0; i < count; i++) {
-      const isCircle = Math.random() > 0.4; // 60% circles, 40% dashes
-      
-      // Color proportion: 50% orange, 35% teal, 15% blue
-      const randColor = Math.random();
-      let color = colors[0];
-      if (randColor > 0.5 && randColor <= 0.85) {
-        color = colors[1];
-      } else if (randColor > 0.85) {
-        color = colors[2];
+    const cellWidth = 100 / cols;
+    const cellHeight = 100 / rows;
+    const data = [];
+
+    for (let r = 0; r < rows; r++) {
+      for (let c = 0; c < cols; c++) {
+        // Shape mix: 55% small dots, 30% short dashes, 15% 4-point sparkle stars
+        const randShape = Math.random();
+        let shape = 'dot';
+        if (randShape > 0.55 && randShape <= 0.85) {
+          shape = 'dash';
+        } else if (randShape > 0.85) {
+          shape = 'star';
+        }
+
+        // Color proportion: 50% orange, 35% teal, 15% blue
+        const randColor = Math.random();
+        let color = colors[0];
+        if (randColor > 0.5 && randColor <= 0.85) {
+          color = colors[1];
+        } else if (randColor > 0.85) {
+          color = colors[2];
+        }
+
+        // Size configuration by type
+        let size;
+        if (shape === 'dot') {
+          size = Math.random() * 2 + 2; // 2-4px
+        } else if (shape === 'dash') {
+          size = Math.random() * 3 + 3; // 3-6px
+        } else {
+          size = Math.random() * 4 + 6; // 6-10px
+        }
+
+        // Density balance: low base opacity (15% to 20%)
+        const baseOpacity = Math.random() * 0.05 + 0.15;
+
+        // Jittered grid placement: random offset within cell boundaries
+        const baseX = c * cellWidth + Math.random() * (cellWidth * 0.8) + (cellWidth * 0.1);
+        const baseY = r * cellHeight + Math.random() * (cellHeight * 0.8) + (cellHeight * 0.1);
+
+        const baseRotation = Math.random() * 360;
+        // Continuous slow rotation speed for stars (20-30s per rotation)
+        const rotationSpeed = (Math.random() * 0.015 + 0.01) * (Math.random() > 0.5 ? 1 : -1);
+
+        // Idle vertical float drift parameters
+        const idleSpeed = Math.random() * 0.0006 + 0.0003;
+        const idleOffset = Math.random() * Math.PI * 2;
+        const driftRange = Math.random() * 12 + 8; // Bobbing range (8px to 20px)
+
+        data.push({
+          shape,
+          color,
+          size,
+          baseOpacity,
+          baseX,
+          baseY,
+          baseRotation,
+          rotationSpeed,
+          idleSpeed,
+          idleOffset,
+          driftRange,
+        });
       }
-
-      const size = Math.random() * 4 + 2; // Size between 2px and 6px
-      const baseOpacity = Math.random() * 0.1 + 0.15; // Base opacity between 0.15 and 0.25
-      const baseX = Math.random() * 100; // Viewport width %
-      const baseY = Math.random() * 100; // Viewport height %
-      const rotation = isCircle ? 0 : Math.random() * 360; // Dash angle rotation
-      
-      // Idle float (sine wave vertical drift parameters)
-      const idleSpeed = Math.random() * 0.0006 + 0.0003; // Multi-second cycle speeds
-      const idleOffset = Math.random() * Math.PI * 2;
-      const driftRange = Math.random() * 12 + 8; // Idle bobbing range (8px to 20px)
-
-      data.push({
-        isCircle,
-        color,
-        size,
-        baseOpacity,
-        baseX,
-        baseY,
-        rotation,
-        idleSpeed,
-        idleOffset,
-        driftRange,
-      });
     }
     return data;
   }, []);
@@ -62,7 +96,6 @@ export default function ParticleField() {
     const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
 
     if (isCoarse || prefersReducedMotion) {
-      // For mobile or reduced motion, render the static dots without ticking rAF loop
       return;
     }
 
@@ -82,14 +115,14 @@ export default function ParticleField() {
         const data = particlesData[idx];
         if (!data) return;
 
-        // Convert viewport % coordinates to current screen pixels
+        // Convert percentage coordinates to current screen pixels
         const px = (data.baseX / 100) * width;
         const py = (data.baseY / 100) * height;
 
-        // Compute idle float drift
+        // Compute vertical idle float
         const idleY = Math.sin(time * data.idleSpeed + data.idleOffset) * data.driftRange;
 
-        // Particle resting coordinates with idle bobbing
+        // Resting position coordinates
         const rx = px;
         const ry = py + idleY;
 
@@ -104,9 +137,9 @@ export default function ParticleField() {
         let finalY = idleY;
 
         if (distance < proximityRadius) {
-          // Falloff factor: 1 at cursor center, 0 at outer proximity bounds
+          // Falloff: 1 at cursor center, 0 at bounds
           const factor = 1 - distance / proximityRadius;
-          const easedFactor = factor * factor; // Quadratic ease for smoother fade-in
+          const easedFactor = factor * factor; // Quadratic ease
 
           // Brighten: scale opacity smoothly up to 0.95 maximum
           finalOpacity = data.baseOpacity + (0.95 - data.baseOpacity) * easedFactor;
@@ -114,14 +147,14 @@ export default function ParticleField() {
           // Scale up slightly for very close particles (within 60px)
           if (distance < 60) {
             const scaleFactor = 1 - distance / 60;
-            finalScale = 1.0 + scaleFactor * 0.4; // max scale 1.4x
+            finalScale = 1.0 + scaleFactor * 0.45; // max scale 1.45x
           }
 
-          // Antigravity repulsion (displacement away from cursor)
+          // Repulsion displacement (push away from cursor)
           const maxDisplacement = 12; // push distance up to 12px
           const displaceDistance = maxDisplacement * easedFactor;
 
-          // Direction vector from cursor center pointing outwards
+          // Direction vector from cursor pointing outwards
           let dirX = dx;
           let dirY = dy;
           if (distance > 0.1) {
@@ -142,11 +175,20 @@ export default function ParticleField() {
         // Apply scroll-based dimming modifier
         finalOpacity *= dim;
 
-        // Commit styled values directly to the DOM for high performance
+        // Formulate transform string
+        let transformStr = `translate3d(${finalX}px, ${finalY}px, 0) scale(${finalScale})`;
+
+        if (data.shape === 'star') {
+          // Slow continuous rotation over time
+          const starAngle = data.baseRotation + time * data.rotationSpeed;
+          transformStr += ` rotate(${starAngle}deg)`;
+        } else if (data.shape === 'dash') {
+          transformStr += ` rotate(${data.baseRotation}deg)`;
+        }
+
+        // Commit styled values directly to the DOM for ultimate performance
         el.style.opacity = finalOpacity;
-        el.style.transform = `translate3d(${finalX}px, ${finalY}px, 0) scale(${finalScale}) ${
-          data.isCircle ? '' : `rotate(${data.rotation}deg)`
-        }`;
+        el.style.transform = transformStr;
       });
 
       animationFrameId = requestAnimationFrame(tick);
@@ -164,25 +206,51 @@ export default function ParticleField() {
       ref={containerRef}
       className="fixed inset-0 pointer-events-none select-none z-0 overflow-hidden"
     >
-      {particlesData.map((p, idx) => (
-        <div
-          key={idx}
-          ref={(el) => (particlesRef.current[idx] = el)}
-          style={{
-            position: 'absolute',
-            left: `${p.baseX}vw`,
-            top: `${p.baseY}vh`,
-            width: p.isCircle ? `${p.size}px` : `${p.size * 1.6}px`, // Dash is longer
-            height: p.isCircle ? `${p.size}px` : `${p.size * 0.4}px`, // Dash is thinner
-            backgroundColor: p.color,
-            borderRadius: p.isCircle ? '50%' : '2px',
-            opacity: p.baseOpacity,
-            transform: p.isCircle ? 'none' : `rotate(${p.rotation}deg)`,
-            transformOrigin: 'center',
-            willChange: 'transform, opacity',
-          }}
-        />
-      ))}
+      {particlesData.map((p, idx) => {
+        if (p.shape === 'star') {
+          return (
+            <div
+              key={idx}
+              ref={(el) => (particlesRef.current[idx] = el)}
+              style={{
+                position: 'absolute',
+                left: `${p.baseX}vw`,
+                top: `${p.baseY}vh`,
+                width: `${p.size}px`,
+                height: `${p.size}px`,
+                color: p.color,
+                opacity: p.baseOpacity,
+                transformOrigin: 'center',
+                willChange: 'transform, opacity',
+              }}
+            >
+              <svg viewBox="0 0 24 24" fill="currentColor" className="w-full h-full">
+                <path d="M12 0L14.6 9.4L24 12L14.6 14.6L12 24L9.4 14.6L0 12L9.4 9.4Z" />
+              </svg>
+            </div>
+          );
+        } else {
+          return (
+            <div
+              key={idx}
+              ref={(el) => (particlesRef.current[idx] = el)}
+              style={{
+                position: 'absolute',
+                left: `${p.baseX}vw`,
+                top: `${p.baseY}vh`,
+                width: p.shape === 'dot' ? `${p.size}px` : `${p.size * 1.6}px`, // Dash is longer
+                height: p.shape === 'dot' ? `${p.size}px` : `${p.size * 0.4}px`, // Dash is thinner
+                backgroundColor: p.color,
+                borderRadius: p.shape === 'dot' ? '50%' : '2px',
+                opacity: p.baseOpacity,
+                transform: p.shape === 'dot' ? 'none' : `rotate(${p.baseRotation}deg)`,
+                transformOrigin: 'center',
+                willChange: 'transform, opacity',
+              }}
+            />
+          );
+        }
+      })}
     </div>
   );
 }
