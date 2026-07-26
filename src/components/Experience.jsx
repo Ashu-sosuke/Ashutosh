@@ -2,13 +2,26 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Calendar, MapPin, ChevronRight, Zap, ArrowUpRight } from 'lucide-react';
 import { experienceData } from '../data/portfolioData';
+import SectionCanvas from './SectionCanvas';
 
 export default function Experience() {
-  return (
-    <section id="experience" className="py-24 relative overflow-hidden">
-      {/* Background ambient glow blob */}
-      <div className="absolute top-[20%] left-[-10%] w-[350px] h-[350px] bg-[#2EC4B6]/4 blur-[120px] rounded-full pointer-events-none" />
+  const expSnippet = `// ParkVault Internship Shipped Features
+const status = 'completed';
+const paymentSDK = 'Razorpay';
+const database = 'Firestore';`;
 
+  return (
+    <SectionCanvas
+      id="experience"
+      splashPosition="bottom-right"
+      splashHueShift={90}
+      splashOpacity={0.15}
+      dotCount={16}
+      dotPosition="top-left"
+      snippet={expSnippet}
+      snippetPosition="top-left"
+      className="py-24 relative overflow-hidden"
+    >
       <div className="layout-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -23,7 +36,7 @@ export default function Experience() {
               <span className="w-8 h-1 rounded-full bg-[#2EC4B6]" />
               <span className="text-xs font-medium uppercase tracking-widest text-[#2EC4B6]">Experience</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8]">
+            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8] text-left">
               Where I've worked & what's next
             </h2>
           </div>
@@ -39,11 +52,17 @@ export default function Experience() {
                 transition={{ duration: 0.4, delay: index * 0.1 }}
                 className="relative"
               >
-                {/* Timeline dot */}
-                <div className="absolute -left-[27px] sm:-left-[41px] top-2 w-5 h-5 rounded-full bg-[#0F0E0D] border-[3px] border-[#FF6B35] shadow-md shadow-[#FF6B35]/15" />
+                {/* Pulsing glow timeline dot */}
+                <div className="absolute -left-[27px] sm:-left-[41px] top-2 w-5 h-5 rounded-full bg-[#0F0E0D] border-[3px] border-[#FF6B35] flex items-center justify-center">
+                  <motion.span
+                    animate={{ scale: [1, 1.6, 1], opacity: [0.3, 0.7, 0.3] }}
+                    transition={{ duration: 2, repeat: Infinity, ease: "easeInOut" }}
+                    className="absolute w-8 h-8 rounded-full bg-[#FF6B35]/20 pointer-events-none"
+                  />
+                </div>
 
                 {/* Card */}
-                <div className="p-6 sm:p-8 rounded-2xl bg-[#1A1815] border border-[#2E2A26] card-hover shadow-lg group">
+                <div className="p-6 sm:p-8 rounded-2xl bg-[#1A1815] border border-[#2E2A26] card-hover shadow-lg group text-left">
                   {/* Header */}
                   <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-5 border-b border-[#2E2A26]">
                     <div>
@@ -109,7 +128,7 @@ export default function Experience() {
               </motion.div>
             ))}
 
-            {/* What's Next Timeline Item */}
+            {/* What's Next Timeline Item with active forward arrow pulse */}
             <motion.div
               initial={{ opacity: 0, x: -20 }}
               whileInView={{ opacity: 1, x: 0 }}
@@ -118,10 +137,16 @@ export default function Experience() {
               className="relative"
             >
               {/* Timeline dot */}
-              <div className="absolute -left-[27px] sm:-left-[41px] top-2 w-5 h-5 rounded-full bg-[#0F0E0D] border-[3px] border-[#2EC4B6]/60 shadow-md shadow-[#2EC4B6]/15" />
+              <div className="absolute -left-[27px] sm:-left-[41px] top-2 w-5 h-5 rounded-full bg-[#0F0E0D] border-[3px] border-[#2EC4B6]/60 flex items-center justify-center">
+                <motion.span
+                  animate={{ scale: [1, 1.4, 1], opacity: [0.4, 0.8, 0.4] }}
+                  transition={{ duration: 2.5, repeat: Infinity, ease: "easeInOut" }}
+                  className="absolute w-7 h-7 rounded-full bg-[#2EC4B6]/15 pointer-events-none"
+                />
+              </div>
 
               {/* Card */}
-              <div className="p-6 sm:p-8 rounded-2xl bg-[#1A1815]/40 border border-[#2E2A26] border-dashed shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+              <div className="p-6 sm:p-8 rounded-2xl bg-[#1A1815]/40 border border-[#2E2A26] border-dashed shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 text-left">
                 <div className="space-y-1">
                   <h4 className="text-lg font-bold font-heading text-[#F5F0E8]">
                     Currently Seeking Next Opportunities
@@ -132,16 +157,21 @@ export default function Experience() {
                 </div>
                 <a
                   href="#contact"
-                  className="px-5 py-2.5 rounded-full bg-[#2EC4B6]/10 text-[#2EC4B6] hover:bg-[#2EC4B6]/20 border border-[#2EC4B6]/25 transition-all text-xs font-semibold shrink-0 inline-flex items-center gap-1.5"
+                  className="px-5 py-2.5 rounded-full bg-[#2EC4B6]/10 text-[#2EC4B6] hover:bg-[#2EC4B6]/20 border border-[#2EC4B6]/25 transition-all text-xs font-semibold shrink-0 inline-flex items-center gap-1.5 group cursor-pointer"
                 >
                   <span>Let's collaborate</span>
-                  <ArrowUpRight className="w-3.5 h-3.5" />
+                  <motion.div
+                    animate={{ x: [0, 4, 0] }}
+                    transition={{ duration: 1.5, repeat: Infinity, ease: "easeInOut" }}
+                  >
+                    <ArrowUpRight className="w-3.5 h-3.5" />
+                  </motion.div>
                 </a>
               </div>
             </motion.div>
           </div>
         </motion.div>
       </div>
-    </section>
+    </SectionCanvas>
   );
 }

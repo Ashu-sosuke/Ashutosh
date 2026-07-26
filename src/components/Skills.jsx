@@ -2,7 +2,7 @@ import React from 'react';
 import { motion } from 'framer-motion';
 import { Cpu, Smartphone, Wrench, Code } from 'lucide-react';
 import { skillsData } from '../data/portfolioData';
-import DotGrid from './DotGrid';
+import SectionCanvas from './SectionCanvas';
 
 export default function Skills() {
   const iconMap = {
@@ -35,15 +35,32 @@ export default function Skills() {
     },
   };
 
+  const iconVariants = {
+    hidden: { scale: 0.4, rotate: -35 },
+    visible: {
+      scale: 1,
+      rotate: 0,
+      transition: { type: 'spring', stiffness: 120, damping: 12, delay: 0.3 }
+    }
+  };
+
+  const skillsSnippet = `const toolkit = [
+  'Kotlin', 'FastAPI', 'Compose',
+  'Firebase', 'Pydantic', 'Docker'
+];`;
+
   return (
-    <section id="skills" className="py-24 relative overflow-hidden">
-      {/* Reactive Dot Grid */}
-      <DotGrid count={12} maxOffset={12} className="bottom-12 left-8 hidden md:block" />
-
-      {/* Background ambient glow blob */}
-      <div className="absolute top-[30%] left-[-10%] w-[380px] h-[380px] bg-[#2EC4B6]/4 blur-[120px] rounded-full pointer-events-none" />
-
-
+    <SectionCanvas
+      id="skills"
+      splashPosition="bottom-left"
+      splashHueShift={180}
+      splashOpacity={0.15}
+      dotCount={12}
+      dotPosition="top-right"
+      snippet={skillsSnippet}
+      snippetPosition="top-right"
+      className="py-24 relative overflow-hidden"
+    >
       <div className="layout-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -58,7 +75,7 @@ export default function Skills() {
               <span className="w-8 h-1 rounded-full bg-[#2EC4B6]" />
               <span className="text-xs font-medium uppercase tracking-widest text-[#2EC4B6]">Skills</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8]">
+            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8] text-left">
               Technical toolkit
             </h2>
           </div>
@@ -76,23 +93,28 @@ export default function Skills() {
                   whileInView={{ opacity: 1, y: 0 }}
                   viewport={{ once: true }}
                   transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
-                  className="p-6 rounded-2xl bg-[#1A1815] border border-[#2E2A26] card-hover flex flex-col justify-between"
+                  className="p-6 rounded-2xl bg-[#1A1815] border border-[#2E2A26] card-hover flex flex-col justify-between text-left"
                 >
                   <div>
                     {/* Category header */}
                     <div className="flex items-center gap-3 pb-4 mb-5 border-b border-[#2E2A26]">
-                      <div
+                      {/* Bouncy icon container entrance */}
+                      <motion.div
+                        variants={iconVariants}
+                        initial="hidden"
+                        whileInView="visible"
+                        viewport={{ once: true }}
                         className="w-10 h-10 rounded-xl flex items-center justify-center"
                         style={{ backgroundColor: accent.bg }}
                       >
                         <IconComponent className="w-5 h-5" style={{ color: accent.color }} strokeWidth={2.2} />
-                      </div>
+                      </motion.div>
                       <h3 className="font-heading text-base font-bold text-[#F5F0E8]">
                         {group.category}
                       </h3>
                     </div>
 
-                    {/* Chips with Staggered scale pop */}
+                    {/* Chips with pop on hover */}
                     <motion.div
                       variants={containerVariants}
                       initial="hidden"
@@ -100,20 +122,31 @@ export default function Skills() {
                       viewport={{ once: true }}
                       className="flex flex-wrap gap-2"
                     >
-                      {group.skills.map((skill) => (
-                        <motion.div
-                          key={skill}
-                          variants={chipVariants}
-                          className="px-3 py-1.5 rounded-full font-code text-xs font-medium border transition-colors hover:brightness-125 cursor-default"
-                          style={{
-                            backgroundColor: accent.bg,
-                            color: accent.color,
-                            borderColor: `${accent.color}30`,
-                          }}
-                        >
-                          {skill}
-                        </motion.div>
-                      ))}
+                      {group.skills.map((skill) => {
+                        // Generate deterministic tilt angle for organic custom pop
+                        const randomTilt = (skill.length % 5) - 2; // -2, -1, 0, 1, 2 degrees
+
+                        return (
+                          <motion.div
+                            key={skill}
+                            variants={chipVariants}
+                            whileHover={{
+                              scale: 1.08,
+                              rotate: randomTilt,
+                              borderColor: accent.color,
+                              transition: { duration: 0.15, ease: 'easeOut' },
+                            }}
+                            className="px-3 py-1.5 rounded-full font-code text-xs font-medium border transition-all hover:brightness-125 cursor-default"
+                            style={{
+                              backgroundColor: accent.bg,
+                              color: accent.color,
+                              borderColor: `${accent.color}30`,
+                            }}
+                          >
+                            {skill}
+                          </motion.div>
+                        );
+                      })}
                     </motion.div>
                   </div>
 
@@ -126,6 +159,6 @@ export default function Skills() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </SectionCanvas>
   );
 }

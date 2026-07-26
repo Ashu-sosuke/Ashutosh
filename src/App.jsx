@@ -15,6 +15,7 @@ import Achievements from './components/Achievements';
 import Contact from './components/Contact';
 import Footer from './components/Footer';
 import { MousePositionProvider } from './context/MouseContext';
+import CustomCursor from './components/CustomCursor';
 
 // Register GSAP plugins
 gsap.registerPlugin(ScrollTrigger);
@@ -61,6 +62,7 @@ export default function App() {
 
   return (
     <MousePositionProvider>
+      <CustomCursor />
       <div className="min-h-screen bg-[#0F0E0D] text-[#F5F0E8] antialiased selection:bg-[#FF6B35]/20 selection:text-[#FF6B35] bg-grain overflow-x-hidden">
         {/* Scroll Progress Bar */}
         <motion.div
@@ -73,6 +75,7 @@ export default function App() {
         {/* DOM Wrapper Structure compatible with smooth scroll containers */}
         <div id="smooth-wrapper">
           <div id="smooth-content" className="relative z-10">
+
             <Hero />
             <KeyFacts />
             <About />

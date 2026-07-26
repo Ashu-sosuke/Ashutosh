@@ -1,16 +1,28 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Award, Medal, Star, Users } from 'lucide-react';
+import { Medal, Star, Users } from 'lucide-react';
 import { achievementsData } from '../data/portfolioData';
+import SectionCanvas from './SectionCanvas';
 
 export default function Achievements() {
   const customBezier = [0.22, 1, 0.36, 1];
+  const achSnippet = `// Hackathon & Verification
+award.verifyLevel('National');
+event.team = 'Web Shinobi';
+event.ranking = 'Top 3';`;
 
   return (
-    <section id="achievements" className="py-24 relative overflow-hidden">
-      {/* Background ambient glow blob */}
-      <div className="absolute top-[40%] right-[-10%] w-[380px] h-[380px] bg-[#FF6B35]/4 blur-[120px] rounded-full pointer-events-none" />
-
+    <SectionCanvas
+      id="achievements"
+      splashPosition="top-right"
+      splashHueShift={200}
+      splashOpacity={0.14}
+      dotCount={12}
+      dotPosition="bottom-left"
+      snippet={achSnippet}
+      snippetPosition="bottom-left"
+      className="py-24 relative overflow-hidden"
+    >
       <div className="layout-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -25,7 +37,7 @@ export default function Achievements() {
               <span className="w-8 h-1 rounded-full bg-[#FF6B35]" />
               <span className="text-xs font-medium uppercase tracking-widest text-[#FF6B35]">Achievements</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8]">
+            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8] text-left">
               Recognition & hackathons
             </h2>
           </div>
@@ -39,12 +51,22 @@ export default function Achievements() {
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
                 transition={{ duration: 0.5, ease: customBezier, delay: index * 0.1 }}
-                className="p-6 rounded-2xl bg-[#1A1815] border border-[#2E2A26] card-hover shadow-lg group relative overflow-hidden flex flex-col justify-between"
+                className="p-6 rounded-2xl bg-[#1A1815] border border-[#2E2A26] card-hover shadow-lg group relative overflow-hidden flex flex-col justify-between cursor-default"
               >
+                {/* Diagonal shine light sweep on hover */}
+                <div className="absolute inset-0 z-0 pointer-events-none overflow-hidden rounded-2xl">
+                  <motion.div
+                    initial={{ x: '-150%' }}
+                    whileHover={{ x: '150%' }}
+                    transition={{ duration: 0.85, ease: 'easeInOut' }}
+                    className="absolute inset-0 bg-gradient-to-r from-transparent via-[#F5F0E8]/5 to-transparent -skew-x-12"
+                  />
+                </div>
+
                 {/* Top accent bar */}
                 <div className="absolute top-0 left-0 right-0 h-[3px] bg-gradient-to-r from-[#FF6B35] via-[#2EC4B6] to-transparent opacity-0 group-hover:opacity-100 transition-opacity" />
 
-                <div>
+                <div className="relative z-10">
                   {/* Header */}
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div
@@ -90,9 +112,9 @@ export default function Achievements() {
                 </div>
 
                 {/* Footer */}
-                <div className="mt-6 pt-4 border-t border-[#2E2A26] flex items-center justify-between text-xs">
+                <div className="mt-6 pt-4 border-t border-[#2E2A26] flex items-center justify-between text-xs relative z-10">
                   <span className="text-[#2EC4B6] flex items-center gap-1.5 font-medium">
-                    <Award className="w-3.5 h-3.5" strokeWidth={2.2} /> Verified Achievement
+                    <Medal className="w-3.5 h-3.5" strokeWidth={2.2} /> Verified Achievement
                   </span>
                   <span className="text-[#9C9388]">National Level</span>
                 </div>
@@ -101,6 +123,6 @@ export default function Achievements() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </SectionCanvas>
   );
 }

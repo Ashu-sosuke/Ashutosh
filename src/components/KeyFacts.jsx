@@ -2,6 +2,7 @@ import React, { useEffect, useRef } from 'react';
 import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
 import { keyFactsData } from '../data/portfolioData';
 import { Award, Briefcase, Code, GraduationCap } from 'lucide-react';
+import Tilt from './Tilt';
 
 function Counter({ end, duration = 1.2 }) {
   const count = useMotionValue(0);
@@ -31,48 +32,49 @@ export default function KeyFacts() {
             const accent = accentColors[index];
 
             return (
-              <motion.div
-                key={fact.label}
-                initial={{ opacity: 0, y: 24 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
-                className="p-5 rounded-2xl bg-[#1A1815] border border-[#2E2A26] hover:border-[#2E2A26] card-hover flex flex-col justify-between group"
-              >
-                <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-medium text-[#9C9388] uppercase tracking-wider">
-                    {fact.unit}
-                  </span>
-                  <div
-                    className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
-                    style={{ backgroundColor: `${accent}12` }}
-                  >
-                    <IconComponent className="w-4.5 h-4.5" style={{ color: accent }} strokeWidth={2.2} />
+              <Tilt key={fact.label} maxTilt={8} className="w-full">
+                <motion.div
+                  initial={{ opacity: 0, y: 24 }}
+                  whileInView={{ opacity: 1, y: 0 }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
+                  className="p-5 rounded-2xl bg-[#1A1815] border border-[#2E2A26] hover:border-[#2E2A26] flex flex-col justify-between group h-full text-left"
+                >
+                  <div className="flex items-center justify-between mb-3">
+                    <span className="text-xs font-medium text-[#9C9388] uppercase tracking-wider">
+                      {fact.unit}
+                    </span>
+                    <div
+                      className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
+                      style={{ backgroundColor: `${accent}12` }}
+                    >
+                      <IconComponent className="w-4.5 h-4.5" style={{ color: accent }} strokeWidth={2.2} />
+                    </div>
                   </div>
-                </div>
 
-                <div className="flex items-baseline gap-1 my-1">
-                  <span className="text-2xl sm:text-3xl font-bold font-heading" style={{ color: accent }}>
-                    {fact.isNumeric ? (
-                      <>
-                        <Counter end={fact.number} />
-                        {fact.suffix}
-                      </>
-                    ) : (
-                      fact.value
-                    )}
-                  </span>
-                </div>
+                  <div className="flex items-baseline gap-1 my-1">
+                    <span className="text-2xl sm:text-3xl font-bold font-heading" style={{ color: accent }}>
+                      {fact.isNumeric ? (
+                        <>
+                          <Counter end={fact.number} />
+                          {fact.suffix}
+                        </>
+                      ) : (
+                        fact.value
+                      )}
+                    </span>
+                  </div>
 
-                <div>
-                  <p className="text-sm font-semibold text-[#F5F0E8]">
-                    {fact.label}
-                  </p>
-                  <p className="text-xs text-[#9C9388] mt-0.5">
-                    {fact.highlight}
-                  </p>
-                </div>
-              </motion.div>
+                  <div>
+                    <p className="text-sm font-semibold text-[#F5F0E8]">
+                      {fact.label}
+                    </p>
+                    <p className="text-xs text-[#9C9388] mt-0.5">
+                      {fact.highlight}
+                    </p>
+                  </div>
+                </motion.div>
+              </Tilt>
             );
           })}
         </div>

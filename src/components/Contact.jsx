@@ -2,11 +2,13 @@ import React, { useState } from 'react';
 import { motion } from 'framer-motion';
 import { Mail, Linkedin, Github, MapPin, Copy, Check, Send, ExternalLink } from 'lucide-react';
 import { contactData } from '../data/portfolioData';
-import DotGrid from './DotGrid';
+import SectionCanvas from './SectionCanvas';
+import Magnetic from './Magnetic';
 
 export default function Contact() {
   const [copied, setCopied] = useState(false);
   const [formSubmitted, setFormSubmitted] = useState(false);
+  const [isSending, setIsSending] = useState(false);
   const [formData, setFormData] = useState({ name: '', email: '', message: '' });
 
   const handleCopyEmail = () => {
@@ -17,16 +19,36 @@ export default function Contact() {
 
   const handleSubmit = (e) => {
     e.preventDefault();
+    setIsSending(true);
+
     const mailtoUrl = `mailto:${contactData.email}?subject=Collaboration Request from ${encodeURIComponent(formData.name)}&body=${encodeURIComponent(formData.message + '\n\nFrom: ' + formData.email)}`;
-    window.location.href = mailtoUrl;
-    setFormSubmitted(true);
+    
+    // Simulate airplane flight transition time before opening mail client
+    setTimeout(() => {
+      window.location.href = mailtoUrl;
+      setFormSubmitted(true);
+      setIsSending(false);
+    }, 850);
   };
 
-  return (
-    <section id="contact" className="py-24 relative overflow-hidden">
-      {/* Reactive Dot Grid */}
-      <DotGrid count={12} maxOffset={12} className="top-12 right-12 hidden md:block" />
+  const contactSnippet = `// Send collaboration payload
+const message = await sendMail(formData);
+if (message.delivered) {
+  toast.success('Mail client launched!');
+}`;
 
+  return (
+    <SectionCanvas
+      id="contact"
+      splashPosition="bottom-right"
+      splashHueShift={220}
+      splashOpacity={0.16}
+      dotCount={12}
+      dotPosition="top-left"
+      snippet={contactSnippet}
+      snippetPosition="top-left"
+      className="py-24 relative overflow-hidden"
+    >
       <div className="layout-container">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -41,14 +63,14 @@ export default function Contact() {
               <span className="w-8 h-1 rounded-full bg-[#2EC4B6]" />
               <span className="text-xs font-medium uppercase tracking-widest text-[#2EC4B6]">Contact</span>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8]">
+            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8] text-left">
               Let's connect
             </h2>
           </div>
 
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-8">
             {/* Left — Info */}
-            <div className="lg:col-span-6 p-6 sm:p-8 rounded-2xl bg-[#1A1815] border border-[#2E2A26] shadow-xl flex flex-col justify-between">
+            <div className="lg:col-span-6 p-6 sm:p-8 rounded-2xl bg-[#1A1815] border border-[#2E2A26] shadow-xl flex flex-col justify-between relative z-10 text-left">
               <div>
                 <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-[#2EC4B6]/10 border border-[#2EC4B6]/25 text-xs font-medium text-[#2EC4B6] mb-4">
                   <span className="w-2 h-2 rounded-full bg-[#2EC4B6] animate-pulse" />
@@ -73,7 +95,7 @@ export default function Contact() {
                     </div>
                     <button
                       onClick={handleCopyEmail}
-                      className="p-2 rounded-lg bg-[#1A1815] border border-[#2E2A26] text-[#9C9388] hover:text-[#FF6B35] hover:border-[#FF6B35] transition-colors shrink-0 flex items-center gap-1 text-xs"
+                      className="p-2 rounded-lg bg-[#1A1815] border border-[#2E2A26] text-[#9C9388] hover:text-[#FF6B35] hover:border-[#FF6B35] transition-colors shrink-0 flex items-center gap-1 text-xs cursor-pointer"
                       title="Copy Email"
                     >
                       {copied ? (
@@ -98,33 +120,38 @@ export default function Contact() {
                 </div>
               </div>
 
-              {/* Social buttons */}
-              <div className="mt-8 pt-6 border-t border-[#2E2A26] flex items-center gap-4">
-                <a
-                  href={contactData.linkedin}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] hover:border-[#FF6B35] text-[#9C9388] hover:text-[#FF6B35] transition-all flex items-center justify-center gap-2 text-xs font-medium"
-                >
-                  <Linkedin className="w-4 h-4" strokeWidth={2.2} />
-                  LinkedIn
-                  <ExternalLink className="w-3 h-3" />
-                </a>
-                <a
-                  href={contactData.github}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="flex-1 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] hover:border-[#FF6B35] text-[#9C9388] hover:text-[#FF6B35] transition-all flex items-center justify-center gap-2 text-xs font-medium"
-                >
-                  <Github className="w-4 h-4" strokeWidth={2.2} />
-                  GitHub
-                  <ExternalLink className="w-3 h-3" />
-                </a>
+              {/* Social buttons with Magnetic wrappers */}
+              <div className="mt-8 pt-6 border-t border-[#2E2A26] flex items-center gap-4 flex-wrap">
+                <Magnetic>
+                  <a
+                    href={contactData.linkedin}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-6 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] hover:border-[#FF6B35] text-[#9C9388] hover:text-[#FF6B35] transition-all flex items-center justify-center gap-2 text-xs font-medium cursor-pointer"
+                  >
+                    <Linkedin className="w-4 h-4" strokeWidth={2.2} />
+                    LinkedIn
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </Magnetic>
+
+                <Magnetic>
+                  <a
+                    href={contactData.github}
+                    target="_blank"
+                    rel="noreferrer"
+                    className="px-6 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] hover:border-[#FF6B35] text-[#9C9388] hover:text-[#FF6B35] transition-all flex items-center justify-center gap-2 text-xs font-medium cursor-pointer"
+                  >
+                    <Github className="w-4 h-4" strokeWidth={2.2} />
+                    GitHub
+                    <ExternalLink className="w-3 h-3" />
+                  </a>
+                </Magnetic>
               </div>
             </div>
 
             {/* Right — Form */}
-            <div className="lg:col-span-6 p-6 sm:p-8 rounded-2xl bg-[#1A1815] border border-[#2E2A26] shadow-xl">
+            <div className="lg:col-span-6 p-6 sm:p-8 rounded-2xl bg-[#1A1815] border border-[#2E2A26] shadow-xl relative z-10 text-left">
               <h4 className="text-lg font-bold font-heading text-[#F5F0E8] mb-1 flex items-center gap-2">
                 <Send className="w-4 h-4 text-[#FF6B35]" strokeWidth={2.2} />
                 Send a message
@@ -142,7 +169,7 @@ export default function Contact() {
                     placeholder="e.g. Alex Vance"
                     value={formData.name}
                     onChange={(e) => setFormData({ ...formData, name: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#F5F0E8] placeholder-[#9C9388]/40 text-sm focus:outline-none focus:border-[#FF6B35] transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#F5F0E8] placeholder-[#9C9388]/40 text-sm focus:outline-none focus:border-[#FF6B35] focus:ring-1 focus:ring-[#FF6B35] focus:shadow-[0_0_12px_rgba(255,107,53,0.15)] transition-all duration-200"
                   />
                 </div>
 
@@ -154,7 +181,7 @@ export default function Contact() {
                     placeholder="alex@techfirm.com"
                     value={formData.email}
                     onChange={(e) => setFormData({ ...formData, email: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#F5F0E8] placeholder-[#9C9388]/40 text-sm focus:outline-none focus:border-[#FF6B35] transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#F5F0E8] placeholder-[#9C9388]/40 text-sm focus:outline-none focus:border-[#FF6B35] focus:ring-1 focus:ring-[#FF6B35] focus:shadow-[0_0_12px_rgba(255,107,53,0.15)] transition-all duration-200"
                   />
                 </div>
 
@@ -166,17 +193,28 @@ export default function Contact() {
                     placeholder="Hi Ashu, I'd love to chat about..."
                     value={formData.message}
                     onChange={(e) => setFormData({ ...formData, message: e.target.value })}
-                    className="w-full px-4 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#F5F0E8] placeholder-[#9C9388]/40 text-sm focus:outline-none focus:border-[#FF6B35] transition-colors"
+                    className="w-full px-4 py-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#F5F0E8] placeholder-[#9C9388]/40 text-sm focus:outline-none focus:border-[#FF6B35] focus:ring-1 focus:ring-[#FF6B35] focus:shadow-[0_0_12px_rgba(255,107,53,0.15)] transition-all duration-200"
                   />
                 </div>
 
-                <button
-                  type="submit"
-                  className="w-full py-3.5 rounded-xl bg-[#FF6B35] text-[#0F0E0D] text-sm font-semibold hover:bg-[#FF6B35]/85 transition-all shadow-lg shadow-[#FF6B35]/15 flex items-center justify-center gap-2 group"
-                >
-                  <span>Launch Mail App</span>
-                  <Send className="w-4 h-4 group-hover:translate-x-1 transition-transform" />
-                </button>
+                <Magnetic>
+                  <button
+                    type="submit"
+                    disabled={isSending}
+                    className="px-8 py-3.5 rounded-xl bg-[#FF6B35] text-[#0F0E0D] text-sm font-semibold hover:bg-[#FF6B35]/85 transition-all shadow-lg shadow-[#FF6B35]/15 flex items-center justify-center gap-2 group cursor-pointer w-full"
+                  >
+                    <span>Launch Mail App</span>
+                    <Send
+                      className="w-4 h-4 transition-transform duration-500 ease-out"
+                      style={{
+                        transform: isSending
+                          ? 'translate(24px, -24px) rotate(45deg) scale(0.6)'
+                          : 'translate(0px, 0px) rotate(0deg) scale(1)',
+                        opacity: isSending ? 0 : 1,
+                      }}
+                    />
+                  </button>
+                </Magnetic>
 
                 {formSubmitted && (
                   <p className="text-xs text-[#2EC4B6] text-center mt-2 font-medium">
@@ -188,6 +226,6 @@ export default function Contact() {
           </div>
         </motion.div>
       </div>
-    </section>
+    </SectionCanvas>
   );
 }
