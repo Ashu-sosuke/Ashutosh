@@ -10,12 +10,17 @@
     --accent-orange: #FF6B35;
     --accent-teal: #2EC4B6;
     --accent-blue: #3A6EA5;
+
+    --border-subtle: rgba(46, 42, 38, 0.6);
+    --border-card: #2E2A26;
+    --border-accent: rgba(255, 107, 53, 0.35);
   }
 
   body {
     background-color: var(--bg-base);
     color: var(--text-primary);
     font-family: 'Inter', sans-serif;
+    overflow-x: clip;
   }
 
   h1, h2, h3, h4, h5, h6 {
@@ -23,7 +28,7 @@
   }
 }
 
-/* ── Standard layout container for site-wide vertical alignment ── */
+/* ── Standard layout container ── */
 .layout-container {
   max-width: 1280px;
   margin-left: auto;
@@ -44,13 +49,43 @@
   }
 }
 
-/* ── Utility classes ── */
+/* ── Typography utilities ── */
 .font-heading {
   font-family: 'Space Grotesk', sans-serif;
 }
 
 .font-code {
   font-family: 'JetBrains Mono', monospace;
+}
+
+/* ── Gradient Utilities (Warm Dark Theme: Orange -> Teal) ── */
+.text-gradient-ak,
+.text-gradient-orange-teal {
+  background: linear-gradient(135deg, #FF6B35 0%, #FFA07A 45%, #2EC4B6 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+}
+
+.bg-gradient-ak,
+.bg-gradient-orange-teal {
+  background: linear-gradient(135deg, #FF6B35 0%, #2EC4B6 100%);
+}
+
+.border-gradient-ak {
+  border-image: linear-gradient(135deg, #FF6B35, #2EC4B6) 1;
+}
+
+/* ── Subtle Cyber Grid ── */
+.bg-grid-cyber {
+  background-size: 44px 44px;
+  background-image: 
+    linear-gradient(to right, rgba(46, 42, 38, 0.45) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(46, 42, 38, 0.45) 1px, transparent 1px);
+}
+
+.bg-dots-cyber {
+  background-size: 24px 24px;
+  background-image: radial-gradient(rgba(245, 240, 232, 0.08) 1px, transparent 1px);
 }
 
 /* ── Subtle warm grain texture ── */
@@ -69,16 +104,17 @@
   background-size: 256px 256px;
 }
 
-/* ── Card hover lift ── */
+/* ── Card hover lift & glow ── */
 .card-hover {
-  transition: transform 0.2s ease, box-shadow 0.2s ease;
+  transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
 }
 .card-hover:hover {
   transform: translateY(-4px);
-  box-shadow: 0 12px 32px -8px rgba(15, 14, 13, 0.6);
+  border-color: rgba(255, 107, 53, 0.4);
+  box-shadow: 0 16px 36px -12px rgba(15, 14, 13, 0.7);
 }
 
-/* ── Custom Scrollbar (warm) ── */
+/* ── Custom Scrollbar (warm dark theme) ── */
 ::-webkit-scrollbar {
   width: 8px;
 }
@@ -93,7 +129,35 @@
   background: #FF6B35;
 }
 
-/* ── Smooth scroll ── */
-html {
-  scroll-behavior: smooth;
+/* ── Smooth scroll & Lenis integration ── */
+html.lenis,
+html.lenis body {
+  height: auto;
+}
+
+.lenis.lenis-smooth {
+  scroll-behavior: auto !important;
+}
+
+.lenis.lenis-smooth [data-lenis-prevent] {
+  overscroll-behavior: contain;
+}
+
+.lenis.lenis-stopped {
+  overflow: clip;
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  html:not(.lenis) {
+    scroll-behavior: smooth;
+  }
+}
+
+/* ── Hide scrollbar utility ── */
+.no-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.no-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
 }

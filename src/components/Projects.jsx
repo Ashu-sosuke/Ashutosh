@@ -1,15 +1,26 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { ExternalLink, Github, Maximize2, X, Sparkles, ArrowRight, ShieldCheck } from 'lucide-react';
+import {
+  ExternalLink,
+  Github,
+  Maximize2,
+  X,
+  ArrowRight,
+  ShieldCheck,
+  Layers,
+  CheckCircle2,
+} from 'lucide-react';
 import { projectsData } from '../data/portfolioData';
 import astraImg from '../assets/astra.png';
 import SectionCanvas from './SectionCanvas';
 import Tilt from './Tilt';
 import Magnetic from './Magnetic';
+import ScrollReveal from './ScrollReveal';
 
 export default function Projects() {
   const [lightboxOpen, setLightboxOpen] = useState(false);
   const [caseStudyOpen, setCaseStudyOpen] = useState(false);
+  const [activeModalProject, setActiveModalProject] = useState(null);
 
   // Featured AstraSOS Image hover cursor-glow coordinates
   const [glowPos, setGlowPos] = useState({ x: 0, y: 0 });
@@ -23,6 +34,27 @@ export default function Projects() {
     });
   };
 
+  // Close modals on Escape key
+  useEffect(() => {
+    const handleKeyDown = (e) => {
+      if (e.key === 'Escape') {
+        setLightboxOpen(false);
+        setCaseStudyOpen(false);
+        setActiveModalProject(null);
+      }
+    };
+    if (lightboxOpen || caseStudyOpen || activeModalProject) {
+      window.addEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'hidden';
+    } else {
+      document.body.style.overflow = 'unset';
+    }
+    return () => {
+      window.removeEventListener('keydown', handleKeyDown);
+      document.body.style.overflow = 'unset';
+    };
+  }, [lightboxOpen, caseStudyOpen, activeModalProject]);
+
   const featuredProject = projectsData.find((p) => p.id === 'astrasos') || projectsData[0];
   const gridProjects = projectsData.filter((p) => p.id !== 'astrasos');
 
@@ -32,7 +64,7 @@ export default function Projects() {
     hidden: {},
     visible: {
       transition: {
-        staggerChildren: 0.15,
+        staggerChildren: 0.12,
       },
     },
   };
@@ -46,20 +78,15 @@ export default function Projects() {
     },
   };
 
-  const projectsSnippet = `function deploySystem() {
-  routeIncident();
-  triggerSMSFailover();
-  updateGeomapCoordinates();
+  const projectsSnippet = `fun deploySystem(module: SystemModule) {
+  validateArchitectureContracts()
+  initializeOfflineDataLayer()
+  startInferencePipeline()
 }`;
 
   return (
     <SectionCanvas
       id="projects"
-      splashPosition="top-left"
-      splashHueShift={150}
-      splashOpacity={0.16}
-      dotCount={16}
-      dotPosition="bottom-right"
       snippet={projectsSnippet}
       snippetPosition="bottom-right"
       className="py-24 relative overflow-hidden"
@@ -67,17 +94,22 @@ export default function Projects() {
       <div className="layout-container">
         <div className="flex flex-col gap-10">
           {/* Section Header */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-1 rounded-full bg-[#FF6B35]" />
-              <span className="text-xs font-medium uppercase tracking-widest text-[#FF6B35]">
-                Projects
-              </span>
+          <ScrollReveal delay={0}>
+            <div className="flex flex-col gap-2 text-left">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-1 rounded-full bg-[#FF6B35]" />
+                <span className="text-xs font-semibold uppercase tracking-widest text-[#FF6B35]">
+                  Portfolio Showcase
+                </span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8]">
+                Featured work & open source
+              </h2>
+              <p className="text-sm text-[#9C9388] max-w-2xl">
+                Production Android applications, emergency response architectures, offline-first platforms, and open-source benchmarks.
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8] text-left">
-              Featured work & open source
-            </h2>
-          </div>
+          </ScrollReveal>
 
           {/* ── CARD 01: FEATURED SYSTEM (AstraSOS) ── */}
           <motion.div
@@ -100,7 +132,7 @@ export default function Projects() {
 
               <div className="flex items-center gap-2">
                 <span className="px-3 py-1 rounded-full text-[11px] font-medium bg-[#2EC4B6]/12 text-[#2EC4B6] border border-[#2EC4B6]/25 uppercase tracking-wider">
-                  {featuredProject.role} · LIVE
+                  {featuredProject.role} · LIVE ARCHITECTURE
                 </span>
               </div>
             </div>
@@ -114,7 +146,7 @@ export default function Projects() {
                 transition={{ duration: 0.6, ease: customBezier }}
                 className="lg:col-span-7 flex flex-col justify-center relative z-10"
               >
-                <Tilt maxTilt={10}>
+                <Tilt maxTilt={8}>
                   <div
                     onClick={() => setLightboxOpen(true)}
                     onMouseMove={handleGlowMove}
@@ -141,24 +173,28 @@ export default function Projects() {
                       )}
 
                       {/* Bottom Overlay Bar */}
-                      <div className="absolute bottom-0 left-0 right-0 px-3.5 py-2.5 bg-[#0F0E0D]/85 backdrop-blur-md border-t border-[#2E2A26] flex items-center justify-between text-[11px] text-[#9C9388] z-20">
-                        <span className="flex items-center gap-1.5">
-                          <ShieldCheck className="w-4 h-4 text-[#2EC4B6]" /> 4 Microservices · Dual Dispatch
+                      <div className="absolute bottom-0 left-0 right-0 px-3.5 py-2.5 bg-[#0F0E0D]/90 backdrop-blur-md border-t border-[#2E2A26] flex items-center justify-between text-[11px] text-[#9C9388] z-20">
+                        <span className="flex items-center gap-1.5 font-medium">
+                          <ShieldCheck className="w-4 h-4 text-[#2EC4B6]" />
+                          Voice · Transcription · News · SOS
                         </span>
-                        <span className="text-[#FF6B35] font-semibold tracking-wider">CLICK TO EXPAND</span>
+                        <span className="text-[#FF6B35] font-semibold tracking-wider flex items-center gap-1">
+                          <Maximize2 className="w-3 h-3" />
+                          EXPAND
+                        </span>
                       </div>
                     </div>
                   </div>
                 </Tilt>
               </motion.div>
- 
+
               {/* Right: Content Column */}
               <motion.div
                 initial={{ opacity: 0, x: 30 }}
                 whileInView={{ opacity: 1, x: 0 }}
                 viewport={{ once: true, margin: '-50px' }}
                 transition={{ duration: 0.6, ease: customBezier }}
-                className="lg:col-span-5 flex flex-col justify-between space-y-6 text-left"
+                className="lg:col-span-5 flex flex-col justify-between space-y-5 text-left"
               >
                 <div className="space-y-4">
                   <div>
@@ -169,46 +205,46 @@ export default function Projects() {
                       AI Emergency Response Ecosystem
                     </p>
                   </div>
- 
-                  <p className="text-sm text-[#9C9388] leading-relaxed">
-                    Architected a 4-service AI ecosystem (Android client, FastAPI intelligence engine, React dashboard, geospatial scraper) routing SOS incidents from trigger to responder dashboard with real-time multi-signal fusion.
+
+                  <p className="text-xs sm:text-sm text-[#9C9388] leading-relaxed">
+                    {featuredProject.description}
                   </p>
- 
+
                   {/* Real Metrics Bar */}
                   <div className="grid grid-cols-2 gap-3">
                     <div className="p-3.5 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] flex flex-col">
-                      <span className="text-2xl sm:text-3xl font-bold font-heading text-[#FF6B35]">
-                        &lt; 2s
+                      <span className="text-xl sm:text-2xl font-bold font-heading text-[#FF6B35]">
+                        1.15 s median
                       </span>
                       <span className="text-[10px] font-semibold text-[#9C9388] uppercase tracking-wider mt-0.5">
-                        Trigger-to-Dispatch
+                        Trigger to Dashboard (n=5)
                       </span>
                     </div>
- 
+
                     <div className="p-3.5 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] flex flex-col">
-                      <span className="text-2xl sm:text-3xl font-bold font-heading text-[#2EC4B6]">
-                        -20%
+                      <span className="text-xl sm:text-2xl font-bold font-heading text-[#2EC4B6]">
+                        33/33 routed
                       </span>
                       <span className="text-[10px] font-semibold text-[#9C9388] uppercase tracking-wider mt-0.5">
-                        Battery Reduction
+                        Emergency Categories
                       </span>
                     </div>
                   </div>
- 
+
                   {/* Why It Matters Callout */}
-                  <div className="p-4 rounded-r-xl border-l-3 border-[#FF6B35] bg-[#FF6B35]/8">
+                  <div className="p-3.5 rounded-r-xl border-l-3 border-[#FF6B35] bg-[#FF6B35]/8">
                     <span className="text-[10px] font-semibold text-[#FF6B35] uppercase tracking-wider block mb-0.5">
                       Why It Matters
                     </span>
-                    <p className="text-xs sm:text-sm text-[#F5F0E8] italic font-medium">
-                      "Most emergency apps assume you have signal and a stable network. This one doesn't."
+                    <p className="text-xs text-[#F5F0E8] italic font-medium leading-relaxed">
+                      "{featuredProject.whyItMatters}"
                     </p>
                   </div>
                 </div>
 
                 {/* Tech tags and GitHub CTA */}
                 <div className="space-y-4 pt-4 border-t border-[#2E2A26]">
-                  <div className="flex flex-wrap gap-3">
+                  <div className="flex flex-wrap gap-2">
                     {featuredProject.tags.map((tag) => (
                       <span
                         key={tag}
@@ -220,25 +256,32 @@ export default function Projects() {
                   </div>
 
                   <div className="flex items-center justify-between gap-4 flex-wrap">
-                    <div className="flex items-center gap-4">
+                    <div className="flex items-center gap-3">
                       <Magnetic>
                         <a
                           href={featuredProject.github}
                           target="_blank"
                           rel="noreferrer"
-                          className="px-5 py-2.5 rounded-full bg-[#FF6B35] text-[#0F0E0D] font-semibold text-xs hover:bg-[#FF6B35]/90 transition-all inline-flex items-center gap-1.5 shadow-md shadow-[#FF6B35]/15 cursor-pointer"
+                          className="px-4 py-2 sm:px-5 sm:py-2.5 rounded-full bg-[#FF6B35] text-[#0F0E0D] font-semibold text-xs hover:bg-[#FF6B35]/90 transition-all inline-flex items-center gap-1.5 shadow-md shadow-[#FF6B35]/15 cursor-pointer"
                         >
                           <Github className="w-3.5 h-3.5" />
-                          <span>VIEW ON GITHUB</span>
+                          <span>VIEW GITHUB</span>
                         </a>
                       </Magnetic>
 
                       <button
                         onClick={() => setCaseStudyOpen(true)}
-                        className="px-4 py-2.5 rounded-full bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] hover:text-[#F5F0E8] hover:border-[#FF6B35] transition-all text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+                        className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] hover:text-[#F5F0E8] hover:border-[#FF6B35] transition-all text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
                       >
                         <span>CASE STUDY</span>
-                        <ArrowRight className="w-3.5 h-3.5" />
+                        <ArrowRight className="w-3.5 h-3.5 text-[#FF6B35]" />
+                      </button>
+
+                      <button
+                        onClick={() => setActiveModalProject(featuredProject)}
+                        className="px-3.5 py-2 sm:px-4 sm:py-2.5 rounded-full bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] hover:text-[#2EC4B6] hover:border-[#2EC4B6] transition-all text-xs font-semibold inline-flex items-center gap-1 cursor-pointer"
+                      >
+                        <span>DETAILS</span>
                       </button>
                     </div>
 
@@ -251,14 +294,16 @@ export default function Projects() {
             </div>
           </motion.div>
 
-          {/* ── GRID CARDS: 02 & 03 (cascade stagger pattern) ── */}
+          {/* ── GRID CARDS: OTHER PROJECTS ── */}
           <div className="flex flex-col gap-6 mt-4">
-            <div className="flex items-center gap-3">
-              <h3 className="text-xl font-bold font-heading text-[#F5F0E8] text-left">
-                More Projects
-              </h3>
-              <div className="h-[1px] bg-[#2E2A26] flex-1" />
-            </div>
+            <ScrollReveal delay={0.1}>
+              <div className="flex items-center gap-3">
+                <h3 className="text-xl sm:text-2xl font-bold font-heading text-[#F5F0E8] text-left">
+                  More Projects & Systems
+                </h3>
+                <div className="h-[1px] bg-[#2E2A26] flex-1" />
+              </div>
+            </ScrollReveal>
 
             <motion.div
               variants={gridContainerVariants}
@@ -268,18 +313,28 @@ export default function Projects() {
               className="grid grid-cols-1 lg:grid-cols-2 gap-8 relative z-10"
             >
               {gridProjects.map((project, idx) => (
-                <Tilt key={project.id} maxTilt={4} className="w-full">
+                <Tilt key={project.id} maxTilt={4} className="w-full h-full">
                   <motion.div
                     variants={cardVariants}
-                    whileTap={{ scale: 0.98 }}
-                    className="p-6 sm:p-7 rounded-2xl bg-[#1A1815] border border-[#2E2A26] hover:border-[#FF6B35]/40 transition-colors duration-300 shadow-lg flex flex-col justify-between group cursor-default h-full text-left"
+                    whileTap={{ scale: 0.99 }}
+                    className="p-6 sm:p-7 rounded-2xl bg-[#1A1815] border border-[#2E2A26] hover:border-[#FF6B35]/40 transition-colors duration-300 shadow-lg flex flex-col justify-between group cursor-default h-full text-left relative overflow-hidden"
                   >
+                    {/* Top colored accent line */}
+                    {project.metric && (
+                      <div
+                        className="absolute top-0 left-0 right-0 h-[2px] opacity-60 group-hover:opacity-100 transition-opacity"
+                        style={{
+                          background: `linear-gradient(90deg, ${project.metric.accentColor || '#FF6B35'}, ${project.metric.badgeColor || '#2EC4B6'})`,
+                        }}
+                      />
+                    )}
+
                     <div className="space-y-4">
                       {/* Header Row */}
                       <div className="flex items-center justify-between gap-3 pb-4 border-b border-[#2E2A26]">
                         <div className="flex items-center gap-2.5">
                           <span className="w-7 h-7 rounded-md bg-[#0F0E0D] border border-[#2E2A26] flex items-center justify-center font-code text-xs font-bold text-[#2EC4B6]">
-                            0{idx + 2}
+                            {`0${idx + 2}`}
                           </span>
                           <span className="text-xs text-[#9C9388] font-medium">{project.role}</span>
                         </div>
@@ -289,50 +344,43 @@ export default function Projects() {
                       </div>
 
                       {/* Title */}
-                      <h3 className="text-xl font-bold font-heading text-[#F5F0E8] group-hover:text-[#FF6B35] transition-colors">
+                      <h3 className="text-xl font-bold font-heading text-[#F5F0E8] group-hover:text-[#FF6B35] transition-colors leading-snug">
                         {project.title}
                       </h3>
 
                       {/* Description */}
-                      <p className="text-sm text-[#9C9388] leading-relaxed">
-                        {project.id === 'fitstore'
-                          ? 'Architecting an offline-first Android app (Clean Architecture, MVI/MVVM) with a WorkManager reconciliation engine between Room cache and FastAPI/MongoDB backend.'
-                          : 'Designed an OpenEnv-compliant simulation environment benchmarking AI agents\' strategic reasoning across multi-turn negotiations with typed Pydantic schemas.'}
+                      <p className="text-xs sm:text-sm text-[#9C9388] leading-relaxed line-clamp-3">
+                        {project.description}
                       </p>
 
                       {/* Real Metric Callout */}
-                      <div className="p-3.5 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] flex items-center justify-between">
-                        {project.id === 'fitstore' ? (
-                          <>
-                            <div>
-                              <span className="text-xl font-bold font-heading text-[#FF6B35] block">
-                                0%
-                              </span>
-                              <span className="text-[10px] font-semibold text-[#9C9388] uppercase tracking-wider">
-                                Data Loss Offline
-                              </span>
-                            </div>
-                            <span className="text-xs text-[#2EC4B6] font-code bg-[#2EC4B6]/10 px-2.5 py-1 rounded-full border border-[#2EC4B6]/20">
-                              Room + WorkManager
+                      {project.metric && (
+                        <div className="p-3.5 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] flex items-center justify-between">
+                          <div>
+                            <span
+                              className="text-xl font-bold font-heading block"
+                              style={{ color: project.metric.accentColor || '#FF6B35' }}
+                            >
+                              {project.metric.value}
                             </span>
-                          </>
-                        ) : (
-                          <>
-                            <div>
-                              <span className="text-xl font-bold font-heading text-[#2EC4B6] block">
-                                3 TIER
-                              </span>
-                              <span className="text-[10px] font-semibold text-[#9C9388] uppercase tracking-wider">
-                                Task Escalation Benchmark
-                              </span>
-                            </div>
-                            <span className="text-xs text-[#FF6B35] font-code bg-[#FF6B35]/10 px-2.5 py-1 rounded-full border border-[#FF6B35]/20">
-                              OpenEnv Protocol
+                            <span className="text-[10px] font-semibold text-[#9C9388] uppercase tracking-wider">
+                              {project.metric.label}
                             </span>
-                          </>
-                        )}
-                      </div>
+                          </div>
+                          <span
+                            className="text-xs font-code px-2.5 py-1 rounded-full border"
+                            style={{
+                              backgroundColor: `${project.metric.badgeColor || '#2EC4B6'}15`,
+                              borderColor: `${project.metric.badgeColor || '#2EC4B6'}30`,
+                              color: project.metric.badgeColor || '#2EC4B6',
+                            }}
+                          >
+                            {project.metric.badge}
+                          </span>
+                        </div>
+                      )}
 
+                      {/* Why it matters */}
                       {project.whyItMatters && (
                         <p className="text-xs text-[#FF6B35] italic font-medium leading-relaxed">
                           ⚡ Why it matters: "{project.whyItMatters}"
@@ -353,17 +401,29 @@ export default function Projects() {
                         ))}
                       </div>
 
-                      <a
-                        href={project.github}
-                        target="_blank"
-                        rel="noreferrer"
-                        className="w-full pt-3 border-t border-[#2E2A26] flex items-center justify-between text-xs font-semibold text-[#FF6B35] hover:text-[#FF6B35]/80 transition-colors"
-                      >
-                        <span>→ VIEW CODE ON GITHUB</span>
-                        <span className="text-[11px] font-code text-[#9C9388] font-normal">
-                          {project.repoName}
-                        </span>
-                      </a>
+                      <div className="w-full pt-3 border-t border-[#2E2A26] flex items-center justify-between gap-2">
+                        {project.github ? (
+                          <a
+                            href={project.github}
+                            target="_blank"
+                            rel="noreferrer"
+                            className="inline-flex items-center gap-1.5 text-xs font-semibold text-[#FF6B35] hover:text-[#FF6B35]/80 transition-colors cursor-pointer"
+                          >
+                            <Github className="w-3.5 h-3.5" />
+                            <span>VIEW GITHUB</span>
+                          </a>
+                        ) : (
+                          <span className="text-xs text-[#9C9388]/50">Internal / Private</span>
+                        )}
+
+                        <button
+                          onClick={() => setActiveModalProject(project)}
+                          className="px-3 py-1 rounded-lg bg-[#0F0E0D] hover:bg-[#2E2A26] border border-[#2E2A26] text-xs font-semibold text-[#F5F0E8] hover:text-[#FF6B35] transition-all cursor-pointer flex items-center gap-1"
+                        >
+                          <span>Details</span>
+                          <ArrowRight className="w-3 h-3 text-[#FF6B35]" />
+                        </button>
+                      </div>
                     </div>
                   </motion.div>
                 </Tilt>
@@ -401,7 +461,7 @@ export default function Projects() {
                 </div>
                 <button
                   onClick={() => setLightboxOpen(false)}
-                  className="p-2 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] hover:text-[#FF6B35] hover:border-[#FF6B35] transition-colors"
+                  className="p-2 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] hover:text-[#FF6B35] hover:border-[#FF6B35] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -427,6 +487,7 @@ export default function Projects() {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setCaseStudyOpen(false)}
+            data-lenis-prevent
             className="fixed inset-0 z-50 bg-[#0F0E0D]/90 backdrop-blur-md p-4 sm:p-8 flex items-center justify-center overflow-y-auto"
           >
             <motion.div
@@ -447,7 +508,7 @@ export default function Projects() {
                 </div>
                 <button
                   onClick={() => setCaseStudyOpen(false)}
-                  className="p-2 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] hover:text-[#FF6B35] hover:border-[#FF6B35] transition-colors"
+                  className="p-2 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] hover:text-[#FF6B35] hover:border-[#FF6B35] transition-colors cursor-pointer"
                 >
                   <X className="w-5 h-5" />
                 </button>
@@ -458,8 +519,8 @@ export default function Projects() {
                   <h4 className="font-bold text-[#FF6B35] font-heading mb-2">
                     1. The Problem Space
                   </h4>
-                  <p className="text-xs text-[#9C9388]">
-                    Most emergency response apps rely on active data networks. In high-risk scenarios, connectivity drops or app triggers fail. AstraSOS was engineered for zero-dependency reliability under 2 seconds.
+                  <p className="text-xs text-[#9C9388] leading-relaxed">
+                    Most emergency response apps rely on active data networks. In high-risk scenarios, connectivity drops or app triggers fail. AstraSOS was engineered for zero-dependency reliability delivering SOS incidents from trigger to responder dashboard in a 1.15 s median.
                   </p>
                 </div>
 
@@ -467,10 +528,10 @@ export default function Projects() {
                   <h4 className="font-bold text-[#2EC4B6] font-heading mb-2">
                     2. Multi-Signal AI Fusion Pipeline
                   </h4>
-                  <p className="text-xs text-[#9C9388]">
-                    • <strong>Faster-Whisper:</strong> Audio stream is transcribed locally/on edge in under 400ms.<br />
-                    • <strong>Librosa:</strong> Audio pitch and vocal stress frequency analysis detects panic state.<br />
-                    • <strong>Groq Llama 3.3 70B:</strong> Synthesizes speech text + stress level to autonomously route severity.
+                  <p className="text-xs text-[#9C9388] leading-relaxed">
+                    • <strong>Faster-Whisper:</strong> Audio stream is transcribed locally/on edge with low-latency execution.<br />
+                    • <strong>Librosa:</strong> Audio pitch and vocal stress frequency analysis detects distress states.<br />
+                    • <strong>Groq Llama 3.3 70B:</strong> Synthesizes speech text and stress levels to autonomously route 33/33 scenarios to the correct emergency service (Police/Fire/Hospital).
                   </p>
                 </div>
 
@@ -478,8 +539,8 @@ export default function Projects() {
                   <h4 className="font-bold text-[#FF6B35] font-heading mb-2">
                     3. Dual-Path Failover Dispatch
                   </h4>
-                  <p className="text-xs text-[#9C9388]">
-                    Local Android SIM sends emergency SMS directly if data connection drops, while Twilio API handles cloud dispatch when data is available. Optimized Room DB background sync cut battery drain by 20%.
+                  <p className="text-xs text-[#9C9388] leading-relaxed">
+                    Local Android SIM sends emergency SMS directly if data connection drops, with cloud Twilio automated failover (verified in 50 simulated trials), plus a news-fetcher module feeding verified incidents to the dashboard.
                   </p>
                 </div>
               </div>
@@ -489,7 +550,7 @@ export default function Projects() {
                   href={featuredProject.github}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-5 py-2 rounded-full bg-[#FF6B35] text-[#0F0E0D] font-semibold text-xs hover:bg-[#FF6B35]/90 transition-all inline-flex items-center gap-1.5"
+                  className="px-5 py-2 rounded-full bg-[#FF6B35] text-[#0F0E0D] font-semibold text-xs hover:bg-[#FF6B35]/90 transition-all inline-flex items-center gap-1.5 cursor-pointer"
                 >
                   <Github className="w-4 h-4" />
                   <span>VIEW REPOSITORY</span>
@@ -497,13 +558,149 @@ export default function Projects() {
 
                 <button
                   onClick={() => setCaseStudyOpen(false)}
-                  className="text-xs font-semibold text-[#9C9388] hover:text-[#F5F0E8]"
+                  className="text-xs font-semibold text-[#9C9388] hover:text-[#F5F0E8] cursor-pointer"
                 >
                   Close Window
                 </button>
               </div>
             </motion.div>
           </motion.div>
+        )}
+      </AnimatePresence>
+
+      {/* ── INTERACTIVE PROJECT DETAILS MODAL ── */}
+      <AnimatePresence>
+        {activeModalProject && (
+          <div data-lenis-prevent className="fixed inset-0 z-50 flex items-center justify-center p-4 sm:p-6 overflow-y-auto">
+            {/* Backdrop */}
+            <motion.div
+              initial={{ opacity: 0 }}
+              animate={{ opacity: 1 }}
+              exit={{ opacity: 0 }}
+              onClick={() => setActiveModalProject(null)}
+              className="fixed inset-0 bg-[#0F0E0D]/85 backdrop-blur-md"
+            />
+
+            {/* Modal Dialog Content */}
+            <motion.div
+              initial={{ opacity: 0, scale: 0.95, y: 20 }}
+              animate={{ opacity: 1, scale: 1, y: 0 }}
+              exit={{ opacity: 0, scale: 0.95, y: 20 }}
+              transition={{ duration: 0.25, ease: [0.22, 1, 0.36, 1] }}
+              className="relative w-full max-w-2xl max-h-[90vh] overflow-y-auto rounded-3xl bg-[#1A1815] border border-[#2E2A26] p-6 sm:p-8 shadow-2xl shadow-[#0F0E0D] z-10 text-left"
+            >
+              {/* Close Button */}
+              <button
+                onClick={() => setActiveModalProject(null)}
+                aria-label="Close details"
+                className="absolute top-5 right-5 p-2 rounded-xl bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] hover:text-[#FF6B35] hover:border-[#FF6B35] transition-colors cursor-pointer"
+              >
+                <X className="w-5 h-5" />
+              </button>
+
+              {/* Modal Header */}
+              <div className="flex items-center gap-2 mb-3">
+                <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#FF6B35]/15 border border-[#FF6B35]/30 text-[#FF6B35]">
+                  {activeModalProject.category}
+                </span>
+                <span className="text-xs text-[#9C9388]">
+                  {activeModalProject.role}
+                </span>
+              </div>
+
+              <h3 className="text-2xl sm:text-3xl font-bold font-heading text-[#F5F0E8]">
+                {activeModalProject.title}
+              </h3>
+
+              {/* Why it matters callout */}
+              {activeModalProject.whyItMatters && (
+                <div className="mt-4 p-4 rounded-xl bg-[#FF6B35]/5 border-l-3 border-[#FF6B35]">
+                  <p className="text-xs text-[#F5F0E8]/90 leading-relaxed font-medium">
+                    {activeModalProject.whyItMatters}
+                  </p>
+                </div>
+              )}
+
+              {/* Verified Key Achievements Bullets */}
+              <div className="mt-6">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-[#9C9388] mb-3">
+                  Verified Engineering Deliverables
+                </h4>
+                <ul className="space-y-2.5">
+                  {(activeModalProject.bullets || [activeModalProject.description]).map((bullet, idx) => (
+                    <li key={idx} className="flex items-start gap-2.5 text-xs sm:text-sm text-[#F5F0E8]/90 leading-relaxed">
+                      <CheckCircle2 className="w-4 h-4 text-[#FF6B35] shrink-0 mt-0.5" />
+                      <span>{bullet}</span>
+                    </li>
+                  ))}
+                </ul>
+              </div>
+
+              {/* Architectural Breakdown */}
+              {activeModalProject.architecture && (
+                <div className="mt-6 pt-6 border-t border-[#2E2A26]">
+                  <h4 className="text-xs font-semibold uppercase tracking-wider text-[#9C9388] mb-3 flex items-center gap-1.5">
+                    <Layers className="w-4 h-4 text-[#2EC4B6]" />
+                    Architectural Deep-Dive
+                  </h4>
+                  <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                    {Object.entries(activeModalProject.architecture).map(([key, value]) => (
+                      <div key={key} className="p-3 rounded-xl bg-[#0F0E0D] border border-[#2E2A26]">
+                        <span className="text-[10px] font-mono uppercase text-[#2EC4B6] block font-semibold">
+                          {key}
+                        </span>
+                        <span className="text-xs text-[#9C9388] mt-1 block leading-snug">
+                          {value}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Tech Stack Pills */}
+              <div className="mt-6 pt-6 border-t border-[#2E2A26]">
+                <h4 className="text-xs font-semibold uppercase tracking-wider text-[#9C9388] mb-3">
+                  Technologies & Frameworks
+                </h4>
+                <div className="flex flex-wrap gap-1.5">
+                  {activeModalProject.tags.map((tag) => (
+                    <span
+                      key={tag}
+                      className="px-2.5 py-1 rounded-md text-xs font-mono bg-[#0F0E0D] border border-[#2E2A26] text-[#F5F0E8]"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                </div>
+              </div>
+
+              {/* Modal Actions */}
+              <div className="mt-8 pt-6 border-t border-[#2E2A26] flex items-center justify-between">
+                {activeModalProject.github ? (
+                  <a
+                    href={activeModalProject.github}
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    className="px-5 py-2.5 rounded-full bg-[#FF6B35] text-[#0F0E0D] text-xs font-semibold flex items-center gap-2 hover:bg-[#FF6B35]/85 transition-colors shadow-lg shadow-[#FF6B35]/20 cursor-pointer"
+                  >
+                    <Github className="w-4 h-4" />
+                    <span>View on GitHub</span>
+                    <ExternalLink className="w-3.5 h-3.5" />
+                  </a>
+                ) : (
+                  <span className="text-xs text-[#9C9388]">Repository confidential</span>
+                )}
+
+                <button
+                  onClick={() => setActiveModalProject(null)}
+                  className="px-4 py-2 rounded-full bg-[#0F0E0D] border border-[#2E2A26] text-xs font-medium text-[#9C9388] hover:text-[#F5F0E8] transition-colors cursor-pointer"
+                >
+                  Close
+                </button>
+              </div>
+            </motion.div>
+          </div>
         )}
       </AnimatePresence>
     </SectionCanvas>

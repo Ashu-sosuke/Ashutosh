@@ -1,163 +1,150 @@
 import React from 'react';
 import { motion } from 'framer-motion';
-import { Cpu, Smartphone, Wrench, Code } from 'lucide-react';
+import { Cpu, Smartphone, Server, Wrench, Code2, Sparkles } from 'lucide-react';
 import { skillsData } from '../data/portfolioData';
 import SectionCanvas from './SectionCanvas';
+import ScrollReveal from './ScrollReveal';
+import Tilt from './Tilt';
+import { staggerContainer, fadeUp } from '../lib/motionVariants';
 
 export default function Skills() {
   const iconMap = {
     Smartphone: Smartphone,
+    Server: Server,
     Cpu: Cpu,
     Wrench: Wrench,
   };
 
-  const categoryAccents = {
-    Android: { color: '#FF6B35', bg: 'rgba(255, 107, 53, 0.12)' },
-    'AI / Backend': { color: '#2EC4B6', bg: 'rgba(46, 196, 182, 0.12)' },
-    Tools: { color: '#3A6EA5', bg: 'rgba(58, 110, 165, 0.15)' },
-  };
-
-  const containerVariants = {
-    hidden: {},
-    visible: {
-      transition: {
-        staggerChildren: 0.03,
-      },
-    },
-  };
-
   const chipVariants = {
-    hidden: { opacity: 0, scale: 0.8 },
-    visible: {
+    hidden: { opacity: 0, scale: 0.85 },
+    show: {
       opacity: 1,
       scale: 1,
-      transition: { duration: 0.35, ease: 'easeOut' },
+      transition: { duration: 0.3, ease: 'easeOut' },
     },
   };
 
-  const iconVariants = {
-    hidden: { scale: 0.4, rotate: -35 },
-    visible: {
-      scale: 1,
-      rotate: 0,
-      transition: { type: 'spring', stiffness: 120, damping: 12, delay: 0.3 }
-    }
-  };
-
-  const skillsSnippet = `const toolkit = [
-  'Kotlin', 'FastAPI', 'Compose',
-  'Firebase', 'Pydantic', 'Docker'
-];`;
+  const skillsSnippet = `val technicalStack = mapOf(
+  "mobile" to listOf("Kotlin", "Jetpack Compose", "Coroutines"),
+  "backend" to listOf("FastAPI", "Pydantic", "MongoDB"),
+  "ai_ml" to listOf("PyTorch", "Whisper", "Groq Llama 3.3"),
+  "devops" to listOf("Docker", "Render", "CI/CD Workflows")
+)`;
 
   return (
     <SectionCanvas
       id="skills"
-      splashPosition="bottom-left"
-      splashHueShift={180}
-      splashOpacity={0.15}
-      dotCount={12}
-      dotPosition="top-right"
       snippet={skillsSnippet}
       snippetPosition="top-right"
       className="py-24 relative overflow-hidden"
     >
       <div className="layout-container">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }}
-          transition={{ duration: 0.5 }}
-          className="flex flex-col gap-10"
-        >
+        <div className="flex flex-col gap-10">
           {/* Section Header */}
-          <div className="flex flex-col gap-2">
-            <div className="flex items-center gap-3">
-              <span className="w-8 h-1 rounded-full bg-[#2EC4B6]" />
-              <span className="text-xs font-medium uppercase tracking-widest text-[#2EC4B6]">Skills</span>
+          <ScrollReveal delay={0}>
+            <div className="flex flex-col gap-2">
+              <div className="flex items-center gap-3">
+                <span className="w-8 h-1 rounded-full bg-[#2EC4B6]" />
+                <span className="text-xs font-semibold uppercase tracking-widest text-[#2EC4B6]">
+                  Technical Proficiency
+                </span>
+              </div>
+              <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8] text-left">
+                Engineering Toolkit & Architecture
+              </h2>
+              <p className="text-sm text-[#9C9388] max-w-xl text-left">
+                Production-tested mobile frameworks, asynchronous backend systems, edge ML runtimes, and developer tooling.
+              </p>
             </div>
-            <h2 className="text-3xl sm:text-4xl font-bold font-heading text-[#F5F0E8] text-left">
-              Technical toolkit
-            </h2>
-          </div>
+          </ScrollReveal>
 
-          {/* Skill Category Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-8">
-            {skillsData.map((group, index) => {
-              const IconComponent = iconMap[group.iconName] || Code;
-              const accent = categoryAccents[group.category] || categoryAccents.Tools;
+          {/* 4 Categorized Bento Cards Grid */}
+          <ScrollReveal delay={0.1}>
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+              {skillsData.map((group) => {
+                const IconComponent = iconMap[group.iconName] || Code2;
+                const accent = group.accent || '#FF6B35';
 
-              return (
-                <motion.div
-                  key={group.category}
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
-                  className="p-6 rounded-2xl bg-[#1A1815] border border-[#2E2A26] card-hover flex flex-col justify-between text-left"
-                >
-                  <div>
-                    {/* Category header */}
-                    <div className="flex items-center gap-3 pb-4 mb-5 border-b border-[#2E2A26]">
-                      {/* Bouncy icon container entrance */}
-                      <motion.div
-                        variants={iconVariants}
-                        initial="hidden"
-                        whileInView="visible"
-                        viewport={{ once: true }}
-                        className="w-10 h-10 rounded-xl flex items-center justify-center"
-                        style={{ backgroundColor: accent.bg }}
-                      >
-                        <IconComponent className="w-5 h-5" style={{ color: accent.color }} strokeWidth={2.2} />
-                      </motion.div>
-                      <h3 className="font-heading text-base font-bold text-[#F5F0E8]">
-                        {group.category}
-                      </h3>
-                    </div>
-
-                    {/* Chips with pop on hover */}
+                return (
+                  <Tilt key={group.category} maxTilt={5} className="w-full">
                     <motion.div
-                      variants={containerVariants}
-                      initial="hidden"
-                      whileInView="visible"
-                      viewport={{ once: true }}
-                      className="flex flex-wrap gap-2"
+                      variants={fadeUp}
+                      whileHover={{ y: -3, transition: { duration: 0.2 } }}
+                      className="p-6 sm:p-7 rounded-2xl bg-[#1A1815] border border-[#2E2A26] hover:border-[#FF6B35]/40 flex flex-col justify-between text-left transition-all duration-300 shadow-xl shadow-[#0F0E0D]/50 h-full relative group overflow-hidden"
                     >
-                      {group.skills.map((skill) => {
-                        // Generate deterministic tilt angle for organic custom pop
-                        const randomTilt = (skill.length % 5) - 2; // -2, -1, 0, 1, 2 degrees
+                      {/* Top colored accent line */}
+                      <div
+                        className="absolute top-0 left-0 right-0 h-[2px] opacity-40 group-hover:opacity-100 transition-opacity"
+                        style={{
+                          background: `linear-gradient(90deg, ${accent}, transparent)`,
+                        }}
+                      />
 
-                        return (
-                          <motion.div
-                            key={skill}
-                            variants={chipVariants}
-                            whileHover={{
-                              scale: 1.08,
-                              rotate: randomTilt,
-                              borderColor: accent.color,
-                              transition: { duration: 0.15, ease: 'easeOut' },
-                            }}
-                            className="px-3 py-1.5 rounded-full font-code text-xs font-medium border transition-all hover:brightness-125 cursor-default"
-                            style={{
-                              backgroundColor: accent.bg,
-                              color: accent.color,
-                              borderColor: `${accent.color}30`,
-                            }}
-                          >
-                            {skill}
-                          </motion.div>
-                        );
-                      })}
+                      <div>
+                        {/* Category header */}
+                        <div className="flex items-center justify-between gap-4 pb-4 mb-4 border-b border-[#2E2A26]">
+                          <div className="flex items-center gap-3">
+                            <div
+                              className="w-11 h-11 rounded-xl flex items-center justify-center shrink-0 shadow-md"
+                              style={{ backgroundColor: `${accent}15` }}
+                            >
+                              <IconComponent className="w-5 h-5" style={{ color: accent }} strokeWidth={2.2} />
+                            </div>
+                            <div>
+                              <h3 className="font-heading text-lg font-bold text-[#F5F0E8]">
+                                {group.category}
+                              </h3>
+                              <p className="text-xs text-[#9C9388] line-clamp-1">
+                                {group.description}
+                              </p>
+                            </div>
+                          </div>
+
+                          <span className="text-[11px] font-mono font-semibold px-2.5 py-1 rounded-full bg-[#0F0E0D] border border-[#2E2A26] text-[#9C9388] shrink-0">
+                            {group.skills.length} techs
+                          </span>
+                        </div>
+
+                        {/* Technology chips */}
+                        <motion.div
+                          variants={staggerContainer(0.03)}
+                          initial="hidden"
+                          whileInView="show"
+                          viewport={{ once: true }}
+                          className="flex flex-wrap gap-2 pt-2"
+                        >
+                          {group.skills.map((skill) => (
+                            <motion.span
+                              key={skill}
+                              variants={chipVariants}
+                              whileHover={{
+                                scale: 1.05,
+                                borderColor: accent,
+                                color: '#F5F0E8',
+                                transition: { duration: 0.15 },
+                              }}
+                              className="px-3 py-1.5 rounded-lg text-xs font-mono font-medium border border-[#2E2A26] bg-[#0F0E0D] text-[#9C9388] hover:text-[#F5F0E8] transition-colors cursor-default"
+                            >
+                              {skill}
+                            </motion.span>
+                          ))}
+                        </motion.div>
+                      </div>
+
+                      {/* Card footer indicator */}
+                      <div className="mt-6 pt-3 border-t border-[#2E2A26] flex items-center justify-between text-[11px] text-[#9C9388]">
+                        <span className="flex items-center gap-1.5 font-medium" style={{ color: accent }}>
+                          <Sparkles className="w-3 h-3" /> Production Verified
+                        </span>
+                        <span>Zero vanity metrics</span>
+                      </div>
                     </motion.div>
-                  </div>
-
-                  <div className="mt-6 pt-3 border-t border-[#2E2A26]/60 text-[11px] text-[#9C9388]">
-                    {group.skills.length} core technologies
-                  </div>
-                </motion.div>
-              );
-            })}
-          </div>
-        </motion.div>
+                  </Tilt>
+                );
+              })}
+            </div>
+          </ScrollReveal>
+        </div>
       </div>
     </SectionCanvas>
   );

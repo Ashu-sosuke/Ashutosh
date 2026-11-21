@@ -1,16 +1,10 @@
 import React from 'react';
-import { motion, useScroll, useTransform } from 'framer-motion';
-import orangeSplatter from '../assets/orange-splatter.png';
+import { motion, useTransform } from 'framer-motion';
 import { useMousePosition } from '../context/MouseContext';
 
 export default function SectionCanvas({
   id,
   className = "",
-  splashPosition = "bottom-left",
-  splashHueShift = 0, // In degrees (e.g. 0 for orange, 150 for teal, 200 for blue)
-  splashOpacity = 0.15,
-  dotCount = 18,
-  dotPosition = "top-right",
   snippet = "",
   snippetPosition = "top-right",
   contentClassName = "",
@@ -22,43 +16,9 @@ export default function SectionCanvas({
   const snippetX = useTransform(mouseX, [-1, 1], [-6, 6]);
   const snippetY = useTransform(mouseY, [-1, 1], [-6, 6]);
 
-  // Determine absolute classes based on position prop
-  const getPositionClass = (pos) => {
-    switch (pos) {
-      case 'top-left':
-        return 'top-0 left-0 origin-top-left';
-      case 'top-right':
-        return 'top-0 right-0 origin-top-right';
-      case 'bottom-left':
-        return 'bottom-0 left-0 origin-bottom-left';
-      case 'bottom-right':
-        return 'bottom-0 right-0 origin-bottom-right';
-      default:
-        return 'top-0 left-0';
-    }
-  };
-
-  const splashClass = getPositionClass(splashPosition);
-  const dotClass = getPositionClass(dotPosition);
-  const snippetClass = getPositionClass(snippetPosition);
-
   return (
     <section id={id} className={`relative overflow-hidden ${className}`}>
-      {/* 1. GPU Hue-Drift Paint Splatter Layer */}
-      <div
-        className={`absolute w-[600px] h-[600px] pointer-events-none select-none z-0 mix-blend-screen`}
-        style={{
-          ...parsePositionStyles(splashPosition),
-          backgroundImage: `url(${orangeSplatter})`,
-          backgroundSize: 'contain',
-          backgroundRepeat: 'no-repeat',
-          opacity: splashOpacity,
-          filter: `hue-rotate(${splashHueShift}deg) contrast(1.1)`,
-        }}
-      />
-
-
-      {/* 3. Ambient Floating Code Snippet */}
+      {/* Ambient Floating Code Snippet */}
       {snippet && (
         <motion.pre
           style={{ x: snippetX, y: snippetY, ...parsePositionStyles(snippetPosition) }}
@@ -68,7 +28,7 @@ export default function SectionCanvas({
         </motion.pre>
       )}
 
-      {/* 4. Foreground Content */}
+      {/* Foreground Content */}
       <div className={`relative z-10 ${contentClassName}`}>
         {children}
       </div>

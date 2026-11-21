@@ -1,8 +1,9 @@
 import React, { useEffect, useRef } from 'react';
 import { motion, useInView, useMotionValue, useTransform, animate } from 'framer-motion';
-import { keyFactsData } from '../data/portfolioData';
-import { Award, Briefcase, Code, GraduationCap } from 'lucide-react';
+import { keyFactsData, projectsData } from '../data/portfolioData';
+import { Award, Briefcase, Code2, GraduationCap } from 'lucide-react';
 import Tilt from './Tilt';
+import { staggerContainer, fadeUp } from '../lib/motionVariants';
 
 function Counter({ end, duration = 1.2 }) {
   const count = useMotionValue(0);
@@ -20,33 +21,37 @@ function Counter({ end, duration = 1.2 }) {
 }
 
 export default function KeyFacts() {
-  const icons = [GraduationCap, Briefcase, Code, Award];
+  const icons = [GraduationCap, Briefcase, Code2, Award];
   const accentColors = ['#FF6B35', '#2EC4B6', '#FF6B35', '#2EC4B6'];
 
   return (
-    <section className="py-14 border-y border-[#2E2A26] bg-[#1A1815]/50 backdrop-blur-sm relative z-20">
+    <section className="py-12 border-y border-[#2E2A26] bg-[#1A1815]/50 backdrop-blur-md relative z-20">
       <div className="layout-container">
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        <motion.div
+          variants={staggerContainer(0.08)}
+          initial="hidden"
+          whileInView="show"
+          viewport={{ once: true, margin: '-50px' }}
+          className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5"
+        >
           {keyFactsData.map((fact, index) => {
             const IconComponent = icons[index % icons.length];
-            const accent = accentColors[index];
+            const accent = accentColors[index % accentColors.length];
 
             return (
-              <Tilt key={fact.label} maxTilt={8} className="w-full">
+              <Tilt key={fact.label} maxTilt={6} className="w-full">
                 <motion.div
-                  initial={{ opacity: 0, y: 24 }}
-                  whileInView={{ opacity: 1, y: 0 }}
-                  viewport={{ once: true }}
-                  transition={{ duration: 0.5, ease: [0.22, 1, 0.36, 1], delay: index * 0.08 }}
-                  className="p-5 rounded-2xl bg-[#1A1815] border border-[#2E2A26] hover:border-[#2E2A26] flex flex-col justify-between group h-full text-left"
+                  variants={fadeUp}
+                  whileHover={{ y: -3, transition: { duration: 0.2, ease: 'easeOut' } }}
+                  className="p-5 rounded-2xl bg-[#1A1815] border border-[#2E2A26] hover:border-[#FF6B35]/30 flex flex-col justify-between group h-full text-left transition-all duration-300 shadow-lg shadow-[#0F0E0D]/40"
                 >
                   <div className="flex items-center justify-between mb-3">
-                    <span className="text-xs font-medium text-[#9C9388] uppercase tracking-wider">
+                    <span className="text-xs font-semibold text-[#9C9388] uppercase tracking-wider">
                       {fact.unit}
                     </span>
                     <div
                       className="w-9 h-9 rounded-xl flex items-center justify-center transition-colors"
-                      style={{ backgroundColor: `${accent}12` }}
+                      style={{ backgroundColor: `${accent}15` }}
                     >
                       <IconComponent className="w-4.5 h-4.5" style={{ color: accent }} strokeWidth={2.2} />
                     </div>
@@ -56,7 +61,7 @@ export default function KeyFacts() {
                     <span className="text-2xl sm:text-3xl font-bold font-heading" style={{ color: accent }}>
                       {fact.isNumeric ? (
                         <>
-                          <Counter end={fact.number} />
+                          <Counter end={fact.unit.includes('OSS') || fact.unit.includes('Work') ? projectsData.length : fact.number} />
                           {fact.suffix}
                         </>
                       ) : (
@@ -77,7 +82,7 @@ export default function KeyFacts() {
               </Tilt>
             );
           })}
-        </div>
+        </motion.div>
       </div>
     </section>
   );

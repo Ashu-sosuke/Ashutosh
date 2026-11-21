@@ -8,8 +8,8 @@ export default function ParticleField() {
   const containerRef = useRef(null);
   const particlesRef = useRef([]);
 
-  // Create a scroll-based dimming opacity: 1.0 at top of page, fading to 0.45 when scrolling past 800px
-  const dimOpacity = useTransform(scrollY, [200, 800], [1.0, 0.45]);
+  // Create a scroll-based dimming opacity: 1.0 at top of page, fading to 0.75 when scrolling past 800px
+  const dimOpacity = useTransform(scrollY, [200, 800], [1.0, 0.75]);
 
   // Generate particle configurations once on mount using jittered grid distribution
   const particlesData = useMemo(() => {
@@ -18,9 +18,9 @@ export default function ParticleField() {
       navigator.hardwareConcurrency && 
       navigator.hardwareConcurrency < 4;
 
-    const cols = isLowEnd ? 10 : 16;
-    const rows = isLowEnd ? 8 : 10;
-    const colors = ['#FF6B35', '#2EC4B6', '#3A6EA5']; // Orange, Teal, Muted Blue
+    const cols = isLowEnd ? 14 : 22;
+    const rows = isLowEnd ? 10 : 15;
+    const colors = ['#FF6B35', '#2EC4B6', '#3A6EA5', '#FFA07A', '#38BDF8']; // Orange, Teal, Muted Blue, Bright Coral, Cyan
 
     const cellWidth = 100 / cols;
     const cellHeight = 100 / rows;
@@ -28,36 +28,38 @@ export default function ParticleField() {
 
     for (let r = 0; r < rows; r++) {
       for (let c = 0; c < cols; c++) {
-        // Shape mix: 55% small dots, 30% short dashes, 15% 4-point sparkle stars
+        // Shape mix: 50% dots, 30% dashes, 20% sparkle stars
         const randShape = Math.random();
         let shape = 'dot';
-        if (randShape > 0.55 && randShape <= 0.85) {
+        if (randShape > 0.50 && randShape <= 0.80) {
           shape = 'dash';
-        } else if (randShape > 0.85) {
+        } else if (randShape > 0.80) {
           shape = 'star';
         }
 
-        // Color proportion: 50% orange, 35% teal, 15% blue
+        // Color proportion: 45% orange, 35% teal, 20% blue/cyan
         const randColor = Math.random();
         let color = colors[0];
-        if (randColor > 0.5 && randColor <= 0.85) {
+        if (randColor > 0.45 && randColor <= 0.80) {
           color = colors[1];
-        } else if (randColor > 0.85) {
+        } else if (randColor > 0.80 && randColor <= 0.92) {
           color = colors[2];
+        } else if (randColor > 0.92) {
+          color = colors[4];
         }
 
-        // Size configuration by type
+        // Size configuration by type (boosted for clear visual impact)
         let size;
         if (shape === 'dot') {
-          size = Math.random() * 2 + 2; // 2-4px
+          size = Math.random() * 3 + 3.5; // 3.5-6.5px
         } else if (shape === 'dash') {
-          size = Math.random() * 3 + 3; // 3-6px
+          size = Math.random() * 5 + 5; // 5-10px
         } else {
-          size = Math.random() * 4 + 6; // 6-10px
+          size = Math.random() * 6 + 10; // 10-16px
         }
 
-        // Density balance: low base opacity (15% to 20%)
-        const baseOpacity = Math.random() * 0.05 + 0.15;
+        // High intensity base opacity (45% to 75% for vivid visibility)
+        const baseOpacity = Math.random() * 0.30 + 0.45;
 
         // Jittered grid placement: random offset within cell boundaries
         const baseX = c * cellWidth + Math.random() * (cellWidth * 0.8) + (cellWidth * 0.1);
@@ -220,6 +222,7 @@ export default function ParticleField() {
                 height: `${p.size}px`,
                 color: p.color,
                 opacity: p.baseOpacity,
+                filter: `drop-shadow(0 0 6px ${p.color})`,
                 transformOrigin: 'center',
                 willChange: 'transform, opacity',
               }}
@@ -243,6 +246,7 @@ export default function ParticleField() {
                 backgroundColor: p.color,
                 borderRadius: p.shape === 'dot' ? '50%' : '2px',
                 opacity: p.baseOpacity,
+                boxShadow: `0 0 8px ${p.color}`,
                 transform: p.shape === 'dot' ? 'none' : `rotate(${p.baseRotation}deg)`,
                 transformOrigin: 'center',
                 willChange: 'transform, opacity',
