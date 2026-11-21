@@ -15,6 +15,7 @@ import Footer from './components/Footer';
 import { MousePositionProvider } from './context/MouseContext';
 import { SmoothScrollProvider } from './providers/SmoothScrollProvider';
 import ParticleField from './components/ParticleField';
+import { Analytics } from '@vercel/analytics/react';
 
 export default function App() {
   // ── Scroll Progress Bar (Framer Motion) ──
@@ -50,6 +51,7 @@ export default function App() {
             <Contact />
             <Footer />
           </main>
+          <Analytics />
         </div>
       </MousePositionProvider>
     </SmoothScrollProvider>
